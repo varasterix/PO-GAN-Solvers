@@ -4,13 +4,13 @@
 # parameter: solution: a solution to the TSP
 # return: the number of cycles in the solution
 def nb_cycles(solution):
-    visitee = [0] * len(solution)
+    visited = [0] * len(solution)
     nb = 0
     for i in range(len(solution)):
         j = i
-        if visitee[j] == 0:
+        if visited[j] == 0:
             nb += 1
-        while visitee[j] < 1:
-            visitee[j] += 1
+        while visited[j] < 1:
+            visited[j] += 1
             j = solution[j]
     return nb
