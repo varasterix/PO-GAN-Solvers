@@ -1,3 +1,6 @@
+
+
+# compte le nombre de cycles dans la solution. solution[i] == i est compté comme un cycle.
 def nb_cycles(solution):
     visitee = [0] * len(solution)
     nb = 0
