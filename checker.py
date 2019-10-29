@@ -1,6 +1,8 @@
 
 
-# compte le nombre de cycles dans la solution. solution[i] == i est compté comme un cycle.
+# Counts the number of cycles in the solution. solution[i] == i is counted as a cycle.
+# parameter: solution: a solution to the TSP
+# return: the number of cycles in the solution
 def nb_cycles(solution):
     visitee = [0] * len(solution)
     nb = 0
