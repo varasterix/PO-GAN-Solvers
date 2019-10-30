@@ -20,5 +20,3 @@ def nb_cycles(solution):
         if j != first_index:
             return 0
     return nb
-
-# this is a test
