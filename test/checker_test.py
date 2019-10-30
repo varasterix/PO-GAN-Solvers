@@ -1,4 +1,4 @@
-import checker as c
+from src import checker as c
 
 nb_pb = 0
 
