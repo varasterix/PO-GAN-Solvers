@@ -25,8 +25,5 @@ class Generator(nn.Module):
         return x
 
     def init_weights(m):
-        >> > print(m)
-
-    >> > if type(m) == nn.Linear:
-        >> > m.weight.data.fill_(1.0)
-    >> > print(m.weight)
+        if type(m) == nn.Linear:
+        m.weight.data.fill_(1.0)
