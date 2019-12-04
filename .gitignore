@@ -1,1 +1,4 @@
 /.idea
+/.git
+/tutorials
+*__pycache__*
