@@ -1,4 +1,4 @@
-from src import checker as c
+from src.discriminator import checker as c
 
 nb_pb = 0
 
@@ -21,7 +21,7 @@ if c.nb_cycles([10, 2, 3, 0]) == 1:
 
 if c.nb_cycles(["c", 2, 3, 0]) == 1:
     nb_pb += 1
-    print("Problem with a solution contating a non Integer element")
+    print("Problem with a solution containing a non Integer element")
 
 if nb_pb == 0:
     print("No Problem was detected by the unit tests")
