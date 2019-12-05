@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def __is_weight_matrix_valid_structure(weight_matrix):
+def is_weight_matrix_valid_structure(weight_matrix):
     """
     The structure of the weight matrix is valid if each element of the matrix (size n x n) is an integer
     :return: True if the structure of the weight matrix is valid, False otherwise
