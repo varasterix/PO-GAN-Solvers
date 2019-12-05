@@ -140,7 +140,7 @@ class OrderedPath(CandidateTSP):
         :return: True if the structure of the ordered path object is valid, False otherwise
         """
         is_valid_structure = (type(self.__ordered_path) == np.ndarray and self.__ordered_path.dtype == int and
-                              objectsTools.__is_weight_matrix_valid_structure(self.__distance_matrix) and
+                              objectsTools.is_weight_matrix_valid_structure(self.__distance_matrix) and
                               len(self.__distance_matrix) == self.__nb_cities)
         if is_valid_structure:
             i = 0

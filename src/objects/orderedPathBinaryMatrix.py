@@ -144,7 +144,7 @@ class OrderedPathBinaryMatrix(CandidateTSP):
         :return: True if the structure of the ordered path binary matrix is valid, False otherwise
         """
         is_valid_structure = (type(self.__binary_matrix) == np.ndarray and self.__binary_matrix.dtype == int and
-                              objectsTools.__is_weight_matrix_valid_structure(self.__distance_matrix) and
+                              objectsTools.is_weight_matrix_valid_structure(self.__distance_matrix) and
                               len(self.__distance_matrix) == self.__nb_cities and
                               self.__binary_matrix.shape[1] == self.__nb_cities and
                               self.__binary_matrix.shape[0] == self.__nb_cities)

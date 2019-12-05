@@ -1,1 +1,1 @@
-from src import discriminator, generator, objects
+from src import discriminator, generator, objects, heuristicsTSP
