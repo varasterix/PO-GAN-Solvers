@@ -1,4 +1,5 @@
 from src.objects.candidateTSP import CandidateTSP
+from src.objects import objectsTools
 import src.objects.neighboursBinaryMatrix as nBM
 import src.objects.neighbours as n
 import src.objects.orderedPathBinaryMatrix as oPBM
@@ -56,6 +57,15 @@ class OrderedPath(CandidateTSP):
                         j += 1
                     i += 1
                 return is_ordered_path_equal and is_distance_matrix_equal
+
+    def get_nb_cities(self):
+        return self.__nb_cities
+
+    def get_candidate(self):
+        return self.__ordered_path
+
+    def get_weight_matrix(self):
+        return self.__distance_matrix
 
     def is_solution(self):
         """
@@ -130,9 +140,8 @@ class OrderedPath(CandidateTSP):
         :return: True if the structure of the ordered path object is valid, False otherwise
         """
         is_valid_structure = (type(self.__ordered_path) == np.ndarray and self.__ordered_path.dtype == int and
-                              type(self.__distance_matrix) == np.ndarray and self.__distance_matrix.dtype == int and
-                              self.__distance_matrix.shape[1] == self.__nb_cities and
-                              self.__distance_matrix.shape[0] == self.__nb_cities)
+                              objectsTools.__is_weight_matrix_valid_structure(self.__distance_matrix) and
+                              len(self.__distance_matrix) == self.__nb_cities)
         if is_valid_structure:
             i = 0
             while is_valid_structure and i < self.__nb_cities:
