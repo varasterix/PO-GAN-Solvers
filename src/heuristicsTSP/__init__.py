@@ -1,1 +1,1 @@
-from src.heuristicsTSP import nearestNeighborHeuristic
+from src.heuristicsTSP import nearestNeighborHeuristic, twoOptImprovementHeuristic

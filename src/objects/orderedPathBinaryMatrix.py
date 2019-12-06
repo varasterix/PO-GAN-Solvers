@@ -60,6 +60,9 @@ class OrderedPathBinaryMatrix(CandidateTSP):
                     i += 1
                 return is_ordered_path_binary_matrix_equal and is_distance_matrix_equal
 
+    def __copy__(self):
+        return OrderedPathBinaryMatrix(np.copy(self.__binary_matrix), np.copy(self.__distance_matrix))
+
     def get_nb_cities(self):
         return self.__nb_cities
 
