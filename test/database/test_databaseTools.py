@@ -10,7 +10,7 @@ class TestDatabaseToolsMethods(unittest.TestCase):
                                            [2, 1, 0, 3, 4],
                                            [2, 0, 3, 0, 4],
                                            [4, 5, 3, 4, 0]], dtype=int)
-        self.assertTrue((dT.read_tsp_file(5, 0, "") == expected_weight_matrix).all())
+        self.assertTrue((dT.read_tsp_file(5, 0, "test/database/") == expected_weight_matrix).all())
 
 
 if __name__ == '__main__':
