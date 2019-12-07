@@ -45,3 +45,23 @@ Note: the option -p need to accept files with absolute repositories.
 Example of TSP file "dataSet_*10*_*0*.tsp" in "test/" repository with *h = 5* :
 
     sh generator.py -n 10 -i 0 -h 5 -p "test/"
+
+#### How to use the shell file "multi_generator.sh" :
+
+This shell file is used to generate *nb_instances* TSP dataSet files "dataSet_*n*_*i*.tsp" (with *i* between *0* and 
+*(nb_instances-1)*). 
+
+This files are stored in the repository at the path *p* (by default, the file is written in the repository 
+"test/database/" from the project root) with *h* the highest integer weight generated for the instances (by default, 
+it is 100).
+
+Command line to use at the root project :
+
+    sh multi_generator.sh -n [nb_cities] -x [nb_instances]
+
+Optional arguments of this command :
+
+    -p [path_to_tsp_dataSet_files]
+    -h [highest_integer_weight]
+
+Note: the option -p need to accept files with absolute repositories.
