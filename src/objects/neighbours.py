@@ -90,7 +90,7 @@ class Neighbours(CandidateTSP):
         if not self.is_solution():
             raise Exception('The candidate is not a solution of the TSP')
         else:
-            return sum([self.__distance_matrix[i, neighbour_i] for i, neighbour_i in enumerate(self.__neighbours_array)])
+            return sum([self.__distance_matrix[i, neighbor_i] for i, neighbor_i in enumerate(self.__neighbours_array)])
 
     def to_neighbours_binary_matrix(self):
         """
