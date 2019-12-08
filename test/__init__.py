@@ -1,1 +1,1 @@
-from test import discriminator, generator, objects
+from test import discriminator, generator, objects, heuristicsTSP
