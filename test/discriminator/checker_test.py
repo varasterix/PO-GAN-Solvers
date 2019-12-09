@@ -1,4 +1,4 @@
-from src import checker as c
+from src.discriminator import checker as c
 
 nb_pb = 0
 
