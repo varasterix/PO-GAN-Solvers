@@ -1,5 +1,5 @@
 import sys
-from databaseTools import generate_tsp_file  # do not mind the PyCharm error
+from src.database.databaseTools import generate_tsp_file
 
 nb_cities = int(sys.argv[1])
 instance_id = int(sys.argv[2])
