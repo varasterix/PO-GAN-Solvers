@@ -94,11 +94,11 @@ class Neighbours(CandidateTSP):
 
     def to_neighbours_binary_matrix(self):
         """
-        :return: the NeighboursBinaryMatrix corresponding to the Neighbours object if it corresponds to a solution,
+        :return: the NeighboursBinaryMatrix corresponding to the Neighbours object if it has a valid structure,
         an exception otherwise
         """
-        if not self.is_solution():
-            raise Exception('The candidate is not a solution of the TSP')
+        if not self.is_valid_structure():
+            raise Exception('The candidate has not a valid structure')
         else:
             binary_matrix = np.zeros((self.__nb_cities, self.__nb_cities), dtype=int)
             for i in range(self.__nb_cities):
@@ -107,7 +107,7 @@ class Neighbours(CandidateTSP):
 
     def to_ordered_path(self):
         """
-        :return: the OrderedPath corresponding to the Neighbours object if it corresponds to a solution,
+        :return: the OrderedPath corresponding to the Neighbours object if it corresponds to a solution of the TSP,
         an exception otherwise
         """
         if not self.is_solution():
@@ -122,8 +122,8 @@ class Neighbours(CandidateTSP):
 
     def to_ordered_path_binary_matrix(self):
         """
-        :return: the OrderedPathBinaryMatrix corresponding to the Neighbours object if it corresponds to a solution,
-        an exception otherwise
+        :return: the OrderedPathBinaryMatrix corresponding to the Neighbours object if it corresponds to a solution of
+        the TSP, an exception otherwise
         """
         if not self.is_solution():
             raise Exception('The candidate is not a solution of the TSP')

@@ -31,4 +31,4 @@ esac
 shift
 done
 
-python ./src/database/generator_unit.py "$NB_CITIES" "$INSTANCE_ID" "$TSP_FILE_PATH" "$HIGHEST_WEIGHT"
+python ./generator_unit.py "$NB_CITIES" "$INSTANCE_ID" "$TSP_FILE_PATH" "$HIGHEST_WEIGHT"

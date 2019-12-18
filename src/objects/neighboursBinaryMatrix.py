@@ -96,11 +96,11 @@ class NeighboursBinaryMatrix(CandidateTSP):
 
     def to_neighbours(self):
         """
-        :return: the Neighbours corresponding to the NeighboursBinaryMatrix object if it corresponds to a solution,
+        :return: the Neighbours corresponding to the NeighboursBinaryMatrix object if it has a valid structure,
         an exception otherwise
         """
-        if not self.is_solution():
-            raise Exception('The candidate is not a solution of the TSP')
+        if not self.is_valid_structure():
+            raise Exception('The candidate has not a valid structure')
         else:
             return n.Neighbours(np.array([np.where(self.__binary_matrix[:, j] == 1)[0][0]
                                           for j in range(self.__nb_cities)], dtype=int), self.__distance_matrix)
