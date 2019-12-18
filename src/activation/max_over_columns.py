@@ -15,7 +15,7 @@ def max_over_columns(input):
                 input.detach().numpy()[index] = 1
             else:
                 input.detach().numpy()[index] = 0
-    return
+    return input
 
 
 input = torch.randn(1)
