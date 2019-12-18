@@ -1,2 +1,2 @@
-from src.objects import candidateTSP, candidateCSP, neighbours, neighboursBinaryMatrix, orderedPath, \
+from src.Python.objects import candidateTSP, candidateCSP, neighbours, neighboursBinaryMatrix, orderedPath, \
     orderedPathBinaryMatrix, objectsTools

@@ -1,1 +1,1 @@
-from src.discriminator import checker
+from src.Python.discriminator import checker
