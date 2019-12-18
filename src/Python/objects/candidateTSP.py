@@ -1,4 +1,4 @@
-from src.objects.candidateCSP import CandidateCSP
+from src.Python.objects.candidateCSP import CandidateCSP
 
 
 class CandidateTSP(CandidateCSP):  # TODO : abus de langage "distance matrix" -> "weight matrix"

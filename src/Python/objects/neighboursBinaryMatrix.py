@@ -1,8 +1,8 @@
-from src.objects.candidateTSP import CandidateTSP
-from src.objects import objectsTools
-import src.objects.neighbours as n
-import src.objects.orderedPath as oP
-import src.objects.orderedPathBinaryMatrix as oPBM
+from src.Python.objects.candidateTSP import CandidateTSP
+from src.Python.objects import objectsTools
+import src.Python.objects.neighbours as n
+import src.Python.objects.orderedPath as oP
+import src.Python.objects.orderedPathBinaryMatrix as oPBM
 import numpy as np
 
 

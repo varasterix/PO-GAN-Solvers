@@ -1,6 +1,6 @@
 import numpy as np
-from src.objects import objectsTools
-import src.objects.orderedPath as oP
+from src.Python.objects import objectsTools
+import src.Python.objects.orderedPath as oP
 
 
 def solve_with_nearest_neighbors_heuristic(weight_matrix):

@@ -1,9 +1,9 @@
 import numpy as np
 import time
-import src.objects.orderedPath as oP
-import src.objects.neighbours as n
-import src.objects.neighboursBinaryMatrix as nBM
-import src.objects.orderedPathBinaryMatrix as oPBM
+import src.Python.objects.orderedPath as oP
+import src.Python.objects.neighbours as n
+import src.Python.objects.neighboursBinaryMatrix as nBM
+import src.Python.objects.orderedPathBinaryMatrix as oPBM
 
 
 def solve_with_two_opt_improvement_heuristic(initial_ordered_path, time_limit):

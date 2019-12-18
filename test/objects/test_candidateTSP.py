@@ -1,9 +1,9 @@
 import unittest
 import numpy as np
-from src.objects.neighbours import Neighbours
-from src.objects.neighboursBinaryMatrix import NeighboursBinaryMatrix
-from src.objects.orderedPath import OrderedPath
-from src.objects.orderedPathBinaryMatrix import OrderedPathBinaryMatrix
+from src.Python.objects.neighbours import Neighbours
+from src.Python.objects.neighboursBinaryMatrix import NeighboursBinaryMatrix
+from src.Python.objects.orderedPath import OrderedPath
+from src.Python.objects.orderedPathBinaryMatrix import OrderedPathBinaryMatrix
 
 distance_matrix_5 = np.array([[0, 5, 1, 10, 1],
                               [1, 0, 1, 8, 1],

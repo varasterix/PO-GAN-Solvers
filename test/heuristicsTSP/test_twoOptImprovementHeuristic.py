@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
-from src.Python.heuristicsTSP import TwoOptImprovementHeuristic, two_opt_swap
-from src.objects.orderedPath import OrderedPath
+from src.Python.heuristicsTSP.twoOptImprovementHeuristic import TwoOptImprovementHeuristic, two_opt_swap
+from src.Python.objects.orderedPath import OrderedPath
 
 distance_matrix_5 = np.array([[0, 5, 1, 10, 1],
                               [1, 0, 1, 8, 1],

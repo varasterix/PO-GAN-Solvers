@@ -1,7 +1,7 @@
 import unittest
 import numpy as np
 from src.Python.heuristicsTSP.nearestNeighborHeuristic import NearestNeighborHeuristic
-from src.objects.orderedPath import OrderedPath
+from src.Python.objects.orderedPath import OrderedPath
 
 
 class TestNearestNeighborHeuristicMethods(unittest.TestCase):

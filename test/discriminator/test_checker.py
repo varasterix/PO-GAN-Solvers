@@ -1,5 +1,5 @@
 import unittest
-from src.discriminator import checker as c
+from src.Python.discriminator import checker as c
 
 
 class TestCheckerMethods(unittest.TestCase):
