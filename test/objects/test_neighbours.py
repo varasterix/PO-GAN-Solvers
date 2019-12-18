@@ -68,7 +68,7 @@ class TestNeighboursMethods(unittest.TestCase):
         self.assertEqual(neighbours_6.to_neighbours_binary_matrix(),
                          NeighboursBinaryMatrix(neighbours_binary_matrix_6, distance_matrix_5))
         with self.assertRaises(Exception):
-            neighbours_2.to_neighbours_binary_matrix()
+            neighbours_3.to_neighbours_binary_matrix()
 
     def test_to_ordered_path_binary_matrix(self):
         ordered_path_binary_matrix_1 = np.array([[0, 0, 1, 0, 0],
