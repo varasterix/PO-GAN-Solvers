@@ -1,1 +1,1 @@
-from src import discriminator, generator, objects, heuristicsTSP, database
+from src.Python import discriminator, generator, objects, heuristicsTSP, database
