@@ -11,7 +11,7 @@ distance_matrix_5 = np.array([[0, 5, 1, 10, 1],
                               [8, 1, 2, 0, 2],
                               [9, 7, 0, 1, 0]], dtype=int)
 neighbours_1 = Neighbours(np.array([1, 2, 3, 4, 0]), distance_matrix_5)  # solution d = 5+1+4+2+9 = 21
-neighbours_2 = Neighbours(np.array([2, 1, 0, 4, 3]), distance_matrix_5)  # 2 cycles
+neighbours_2 = Neighbours(np.array([2, 1, 0, 4, 3]), distance_matrix_5)  # 3 cycles
 neighbours_3 = Neighbours(np.array([4, 5, 2, 3, 0]), distance_matrix_5)
 neighbours_4 = Neighbours(np.array([1, 0, 2, 3, -1]), distance_matrix_5)
 neighbours_5 = Neighbours(np.array([0, "c"]), distance_matrix_5[:2, :2])
@@ -93,6 +93,12 @@ class TestNeighboursMethods(unittest.TestCase):
         self.assertNotEqual(neighbours_6, neighbours_6c)
         with self.assertRaises(Exception):
             neighbours_2.__eq__(neighbours_1)
+
+    def test_get_nb_cycles(self):
+        self.assertEqual(neighbours_1.get_nb_cycles(), 1)
+        self.assertEqual(neighbours_2.get_nb_cycles(), 3)
+        with self.assertRaises(Exception):
+            neighbours_3.get_nb_cycles()
 
 
 if __name__ == '__main__':
