@@ -21,7 +21,7 @@ neighbours_binary_matrix_2 = NeighboursBinaryMatrix(np.array([[0, 0, 1, 0, 0],
                                                               [1, 0, 0, 0, 0],
                                                               [0, 0, 0, 0, 1],
                                                               [0, 0, 0, 1, 0]], dtype=int),
-                                                    distance_matrix_5)  # 2 cycles
+                                                    distance_matrix_5)  # 3 cycles
 neighbours_binary_matrix_3 = NeighboursBinaryMatrix(np.array([[0, 0, 0, 0, 1],
                                                               [1, 0, 0, 0, 1],
                                                               [0, 1, 0, 0, 0],
@@ -124,6 +124,12 @@ class TestNeighboursBinaryMatrixMethods(unittest.TestCase):
         self.assertNotEqual(neighbours_binary_matrix_6, neighbours_binary_matrix_6c)
         with self.assertRaises(Exception):
             neighbours_binary_matrix_1.__eq__(neighbours_binary_matrix_2)
+
+    def test_get_nb_cycles(self):
+        self.assertEqual(neighbours_binary_matrix_1.get_nb_cycles(), 1)
+        self.assertEqual(neighbours_binary_matrix_2.get_nb_cycles(), 3)
+        with self.assertRaises(Exception):
+            neighbours_binary_matrix_3.get_nb_cycles()
 
 
 if __name__ == '__main__':
