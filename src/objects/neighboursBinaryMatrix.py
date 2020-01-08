@@ -96,11 +96,11 @@ class NeighboursBinaryMatrix(CandidateTSP):
 
     def to_neighbours(self):
         """
-        :return: the Neighbours corresponding to the NeighboursBinaryMatrix object if it corresponds to a solution,
+        :return: the Neighbours corresponding to the NeighboursBinaryMatrix object if it has a valid structure,
         an exception otherwise
         """
-        if not self.is_solution():
-            raise Exception('The candidate is not a solution of the TSP')
+        if not self.is_valid_structure():
+            raise Exception('The candidate has not a valid structure')
         else:
             return n.Neighbours(np.array([np.where(self.__binary_matrix[:, j] == 1)[0][0]
                                           for j in range(self.__nb_cities)], dtype=int), self.__distance_matrix)
@@ -156,3 +156,26 @@ class NeighboursBinaryMatrix(CandidateTSP):
                                       len(np.where(city_bin_j == 0)[0]) == (self.__nb_cities - 1))
                 j += 1
         return is_valid_structure
+
+    def get_nb_cycles(self):
+        """
+        Counts the number of cycles in the considered object. If the ith neighbor is i, it is counted as a cycle.
+        :return the number of cycles in the considered object if it has a valid structure, an exception otherwise
+        """
+        if not self.is_valid_structure():
+            raise Exception('The candidate has not a valid structure')
+        else:
+            nb_cities = self.get_nb_cities()
+            visited = [0] * nb_cities
+            nb_cycles = 0
+            for i in range(nb_cities):
+                j = i
+                if visited[j] == 0:
+                    nb_cycles += 1
+                    first_index = j
+                    while visited[j] < 1:
+                        visited[j] += 1
+                        j = np.where(self.__binary_matrix[:, j] == 1)[0][0]  # it gets the neighbor of the city j
+                    if j != first_index:
+                        return 0
+            return nb_cycles

@@ -94,11 +94,11 @@ class Neighbours(CandidateTSP):
 
     def to_neighbours_binary_matrix(self):
         """
-        :return: the NeighboursBinaryMatrix corresponding to the Neighbours object if it corresponds to a solution,
+        :return: the NeighboursBinaryMatrix corresponding to the Neighbours object if it has a valid structure,
         an exception otherwise
         """
-        if not self.is_solution():
-            raise Exception('The candidate is not a solution of the TSP')
+        if not self.is_valid_structure():
+            raise Exception('The candidate has not a valid structure')
         else:
             binary_matrix = np.zeros((self.__nb_cities, self.__nb_cities), dtype=int)
             for i in range(self.__nb_cities):
@@ -107,7 +107,7 @@ class Neighbours(CandidateTSP):
 
     def to_ordered_path(self):
         """
-        :return: the OrderedPath corresponding to the Neighbours object if it corresponds to a solution,
+        :return: the OrderedPath corresponding to the Neighbours object if it corresponds to a solution of the TSP,
         an exception otherwise
         """
         if not self.is_solution():
@@ -122,8 +122,8 @@ class Neighbours(CandidateTSP):
 
     def to_ordered_path_binary_matrix(self):
         """
-        :return: the OrderedPathBinaryMatrix corresponding to the Neighbours object if it corresponds to a solution,
-        an exception otherwise
+        :return: the OrderedPathBinaryMatrix corresponding to the Neighbours object if it corresponds to a solution of
+        the TSP, an exception otherwise
         """
         if not self.is_solution():
             raise Exception('The candidate is not a solution of the TSP')
@@ -153,3 +153,26 @@ class Neighbours(CandidateTSP):
                     is_valid_structure = False
                 i += 1
         return is_valid_structure
+
+    def get_nb_cycles(self):
+        """
+        Counts the number of cycles in the considered object. If the ith neighbor is i, it is counted as a cycle.
+        :return the number of cycles in the considered object if it has a valid structure, an exception otherwise
+        """
+        if not self.is_valid_structure():
+            raise Exception('The candidate has not a valid structure')
+        else:
+            nb_cities = self.get_nb_cities()
+            visited = [0] * nb_cities
+            nb_cycles = 0
+            for i in range(nb_cities):
+                j = i
+                if visited[j] == 0:
+                    nb_cycles += 1
+                    first_index = j
+                    while visited[j] < 1:
+                        visited[j] += 1
+                        j = self.__neighbours_array[j]
+                    if j != first_index:
+                        return 0
+            return nb_cycles
