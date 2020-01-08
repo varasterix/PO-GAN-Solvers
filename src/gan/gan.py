@@ -18,7 +18,7 @@ class GAN:
         self.loss_function = torch.nn.MSELoss()
 
     def train(self, epochs=1, batch_size=128):
-        weightmatrix = np.random.rand(10, 10)
+        weightmatrix = np.random.randint(0, 100, (10, 10))
         for epoch in range(epochs):
             input = torch.randn(1)
             output = self.generator(input)
