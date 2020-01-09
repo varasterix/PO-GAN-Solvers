@@ -28,24 +28,11 @@ public class TSP {
         String res = "";
         for (int i=0; i<this.getMatrix().length; i++) {
             for (int j=0; j<this.getMatrix().length; j++) {
-                res += this.getMatrix()[i][j] + " ";
+                res += this.getMatrix()[i][j] + "   ";
             }
             res += "\n";
         }
         return res;
     }
 
-    public static void main(String[] args) throws UnsupportedEncodingException, FileNotFoundException {
-        int nb_cities = 10;
-
-        for (int i=0; i<2000; i++) {
-            TSP tsp = new TSP(nb_cities);
-
-            PrintWriter writer = new PrintWriter(String.format("dataSet_%d_%d.tsp", tsp.getNb_cities(), i), "UTF-8");
-            writer.println(i);
-            writer.println(tsp.getNb_cities());
-            writer.println(tsp.toString());
-            writer.close();
-        }
-    }
 }
