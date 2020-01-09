@@ -1,3 +1,5 @@
+import java.io.*;
+
 public class TSP {
 
     public static int nb_cities;
@@ -23,19 +25,27 @@ public class TSP {
 
     @Override
     public String toString() {
-        String res = "[";
-        for (int i=0; i<this.getNb_cities(); i++) {
-            for (int j=0; j<this.getNb_cities() - 1; j++) {
-                res += this.getMatrix()[i][j] + ", ";
+        String res = "";
+        for (int i=0; i<this.getMatrix().length; i++) {
+            for (int j=0; j<this.getMatrix().length; j++) {
+                res += this.getMatrix()[i][j] + " ";
             }
+            res += "\n";
         }
-        res += this.getMatrix()[this.getNb_cities() - 1][this.getNb_cities() - 1] + "]";
         return res;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnsupportedEncodingException, FileNotFoundException {
         int nb_cities = 10;
-        TSP tsp = new TSP(nb_cities);
-        System.out.println(tsp.toString());
+
+        for (int i=0; i<2000; i++) {
+            TSP tsp = new TSP(nb_cities);
+
+            PrintWriter writer = new PrintWriter(String.format("dataSet_%d_%d.tsp", tsp.getNb_cities(), i), "UTF-8");
+            writer.println(i);
+            writer.println(tsp.getNb_cities());
+            writer.println(tsp.toString());
+            writer.close();
+        }
     }
 }
