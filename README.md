@@ -81,7 +81,10 @@ Optional arguments of this command :
     -p [path_to_tsp_dataSet_files]
     -h [highest_integer_weight]
 
+
 #### How to use the shell file "compute_heuristic.sh" :
+
+###### WARNING: From here, TSP instances with symmetric weight/distance/cost matrix are considered
 
 This shell file is used to generate the TSP dataSet heuristic solution file "dataSet_*n*_*instance_id*.heuristic". 
 
