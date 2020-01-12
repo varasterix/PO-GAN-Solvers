@@ -4,6 +4,7 @@ import numpy as np
 def is_weight_matrix_valid_structure(weight_matrix):
     """
     The structure of the weight matrix is valid if each element of the matrix (size n x n) is an integer
+    :param weight_matrix: object pretending to be a weight/distance matrix
     :return: True if the structure of the weight matrix is valid, False otherwise
     """
     return (type(weight_matrix) == np.ndarray and weight_matrix.dtype == int and
@@ -14,6 +15,7 @@ def is_weight_matrix_symmetric(weight_matrix):
     """
     The structure of the weight matrix is valid if each element of the matrix (size n x n) is an integer
     The weight matrix has also to be symmetric
+    :param weight_matrix: object pretending to be a weight/distance matrix symmetric
     :return: True if the structure of the weight matrix is valid and symmetric, False otherwise
     """
     if not is_weight_matrix_valid_structure(weight_matrix):
@@ -28,3 +30,15 @@ def is_weight_matrix_symmetric(weight_matrix):
                 if not is_symmetric:
                     break
     return is_symmetric
+
+
+def get_highest_weight(weight_matrix):
+    """
+    Returns the highest weight of the weight/distance matrix
+    :param weight_matrix: object pretending to be a weight/distance matrix symmetric
+    :return: the highest weight of the weight/distance matrix if it has a valid structure, an Exception otherwise
+    """
+    if not is_weight_matrix_valid_structure(weight_matrix):
+        raise Exception("The structure of the weight/distance matrix is not valid")
+    else:
+        return np.max(weight_matrix)
