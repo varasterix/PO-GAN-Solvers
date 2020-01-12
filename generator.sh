@@ -2,6 +2,8 @@
 
 HIGHEST_WEIGHT="100"
 TSP_FILE_PATH="data/tsp_files/"
+SYMMETRIC=0
+
 while [[ $# -gt 0 ]]
 do
 key="$1"
@@ -23,6 +25,10 @@ case $key in
     HIGHEST_WEIGHT="$2"
     shift
     ;;
+    -s)
+    SYMMETRIC="$2"
+    shift
+    ;;
     *)
         echo "Argument inconnu: ${1}"
         exit
@@ -31,4 +37,4 @@ esac
 shift
 done
 
-python ./generator_unit.py "$NB_CITIES" "$INSTANCE_ID" "$TSP_FILE_PATH" "$HIGHEST_WEIGHT"
+python ./generator_unit.py "$NB_CITIES" "$INSTANCE_ID" "$TSP_FILE_PATH" "$HIGHEST_WEIGHT" "SYMMETRIC"
