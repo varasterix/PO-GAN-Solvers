@@ -42,3 +42,14 @@ def get_highest_weight(weight_matrix):
         raise Exception("The structure of the weight/distance matrix is not valid")
     else:
         return np.max(weight_matrix)
+
+
+def normalize_weight_matrix(weight_matrix):
+    """
+    Returns the corresponding normalized weight/distance matrix
+    :param weight_matrix: object pretending to be a weight/distance matrix
+    :return: the corresponding normalized weight/distance matrix if the weight/distance has a valid structure,
+    an Exception otherwise
+    """
+    highest_weight = get_highest_weight(weight_matrix)
+    return weight_matrix / highest_weight
