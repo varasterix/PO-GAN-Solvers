@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HIGHEST_WEIGHT="100"
+TIME_LIMIT="10"
 TSP_FILES_PATH="data/tsp_files/"
 while [[ $# -gt 0 ]]
 do
@@ -19,8 +19,8 @@ case $key in
     TSP_FILES_PATH="$2"
     shift
     ;;
-    -h)
-    HIGHEST_WEIGHT="$2"
+    -l)
+    TIME_LIMIT="$2"
     shift
     ;;
     *)
@@ -34,6 +34,6 @@ done
 # shellcheck disable=SC2004
 for ((instance_id = 0; instance_id < $NB_INSTANCES; instance_id++))
 do
-  echo "$TSP_FILES_PATH""dataSet_""$NB_CITIES""_$instance_id.tsp"
-  ./generator.sh -n "$NB_CITIES" -i "$instance_id" -p "$TSP_FILES_PATH" -h "$HIGHEST_WEIGHT"
+  echo "$TSP_FILES_PATH""dataSet_""$NB_CITIES""_$instance_id.heuristic"
+  ./compute_heuristic.sh -n "$NB_CITIES" -i "$instance_id" -p "$TSP_FILES_PATH" -l "$TIME_LIMIT"
 done

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-HIGHEST_WEIGHT="100"
+TIME_LIMIT="10"
 TSP_FILE_PATH="data/tsp_files/"
 while [[ $# -gt 0 ]]
 do
@@ -19,8 +19,8 @@ case $key in
     TSP_FILE_PATH="$2"
     shift
     ;;
-    -h)
-    HIGHEST_WEIGHT="$2"
+    -l)
+    TIME_LIMIT="$2"
     shift
     ;;
     *)
@@ -31,4 +31,4 @@ esac
 shift
 done
 
-python ./generator_unit.py "$NB_CITIES" "$INSTANCE_ID" "$TSP_FILE_PATH" "$HIGHEST_WEIGHT"
+python ./compute_heuristic_unit.py "$NB_CITIES" "$INSTANCE_ID" "$TSP_FILE_PATH" "$TIME_LIMIT"
