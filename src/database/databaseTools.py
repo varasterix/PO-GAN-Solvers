@@ -7,7 +7,7 @@ from src.heuristicsTSP import nearestNeighborHeuristic as nNH, twoOptImprovement
 """
 Considering an instance of the TSP, it is defined with its weight/distance matrix <M> of size (n x n) with n, the
 number of cities of this considered instance.
-Thus, a file in the "test/tsp_database/", which is called "dataSet_<n>_<instance_id>.tsp" is written in this format :
+Thus, a file in the "data/tsp_files/", which is called "dataSet_<n>_<instance_id>.tsp" is written in this format :
 "   <instance_id>   (with <instance_id> between 0 to the number of instances with <n> cities studied)
     <n>             (the number of cities)
     <M>[0,0]   <M>[0,1]    ...  <M>[0,n-1] (with <M>[i,j] the weight/distance from the city i to the city j)
@@ -16,7 +16,7 @@ Thus, a file in the "test/tsp_database/", which is called "dataSet_<n>_<instance
     <M>[n-1,0] <M>[n-1,1]  ...  <M>[n-1,n-1]    "
 Note: For all i in [|0, n-1|], <M>[i,i] = 0
 
-Besides, a file in the same repository", called "dataSet_<n>_<instance_id>.heuristic", which also contains a solution 
+Besides, a file in the same repository, called "dataSet_<n>_<instance_id>.heuristic", which also contains a solution 
 to the considered instance of the TSP (in the "dataSet_<n>_<instance_id>.tsp" file), is written in this format :
 "   <instance_id>
     <n>
@@ -24,12 +24,12 @@ to the considered instance of the TSP (in the "dataSet_<n>_<instance_id>.tsp" fi
     <M>[1,0]   <M>[1,1]    ...  <M>[1,n-1]
     ...        ...         ...  ...
     <M>[n-1,0] <M>[n-1,1]  ...  <M>[n-1,n-1]
-    <S>[0]  <S>[1]  ... <O>[n-1] (with <S>[i] the (i+1)th city visited in the solution)
+    <S>[0]  <S>[1]  ... <S>[n-1] (with <S>[i] the (i+1)th city visited in the solution)
     <total_weigh> (the total cost/weight/distance of the solution S for the considered instance)    "
 """
 
 
-def read_tsp_file(nb_cities, instance_id, path="test/tsp_database/"):
+def read_tsp_file(nb_cities, instance_id, path="data/tsp_files/"):
     """
     Imports the weight/distance matrix corresponding to the TSP dataSet file "dataSet_<n>_<instance_id>.tsp"
     :param nb_cities: the number of cities of the instance of the TSP dataSet file considered
@@ -47,7 +47,7 @@ def read_tsp_file(nb_cities, instance_id, path="test/tsp_database/"):
     return weight_matrix
 
 
-def generate_tsp_file(nb_cities, instance_id, path="test/tsp_database/", highest_weight=100, symmetric=False):
+def generate_tsp_file(nb_cities, instance_id, path="data/tsp_files/", highest_weight=100, symmetric=False):
     """
     Generates the TSP dataSet file "dataSet_<n>_<instance_id>.tsp" for an instance with a given number of cities
     :param nb_cities: the number of cities of the instance of the TSP dataSet file considered (int)
@@ -82,7 +82,7 @@ def generate_tsp_file(nb_cities, instance_id, path="test/tsp_database/", highest
     return None
 
 
-def compute_tsp_heuristic_solution(nb_cities, instance_id, path="test/tsp_database/", time_limit=1):
+def compute_tsp_heuristic_solution(nb_cities, instance_id, path="data/tsp_files/", time_limit=1):
     """
     Computes the TSP dataSet heuristic solution file "dataSet_<n>_<instance_id>.heuristic" corresponding to the
     instance of the TSP given by the file "dataSet_<n>_<instance_id>.tsp"
@@ -108,7 +108,7 @@ def compute_tsp_heuristic_solution(nb_cities, instance_id, path="test/tsp_databa
     return None
 
 
-def read_tsp_heuristic_solution_file(nb_cities, instance_id, path="test/tsp_database/"):
+def read_tsp_heuristic_solution_file(nb_cities, instance_id, path="data/tsp_files/"):
     """
     Imports a solution (object OrderedPath containing the weight/distance matrix) and the total cost/weight/distance of
     this solution corresponding to the TSP dataSet heuristic solution file "dataSet_<n>_<instance_id>.heuristic"
