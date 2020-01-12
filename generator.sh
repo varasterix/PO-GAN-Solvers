@@ -37,4 +37,4 @@ esac
 shift
 done
 
-python ./generator_unit.py "$NB_CITIES" "$INSTANCE_ID" "$TSP_FILE_PATH" "$HIGHEST_WEIGHT" "SYMMETRIC"
+python ./generator_unit.py "$NB_CITIES" "$INSTANCE_ID" "$TSP_FILE_PATH" "$HIGHEST_WEIGHT" "$SYMMETRIC"
