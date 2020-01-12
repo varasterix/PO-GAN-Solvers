@@ -47,6 +47,7 @@ This shell file is used to generate the TSP dataSet file "dataSet_*n*_*instance_
 This file corresponds to the *i* th instance of the TSP with *n* cities in the repository at
 the path *p* (by default, the file is written in the repository "data/tsp_files/" from the 
 project root) with *h* the highest integer weight generated of the instance (by default, it is 100).
+The option *s* indicates if the TSP instance has to be symmetric or not (by default, non symmetric).
 
 Command line to use at the root project :
 
@@ -56,12 +57,15 @@ Optional arguments of this command :
 
     -p [path_to_tsp_dataSet_file]
     -h [highest_integer_weight]
+    -s [is_weight_matrix_symmetric]
 
-Note: the option -p need to accept files with absolute repositories (like the others -p options after).
+Note: 
+- the option -p need to accept files with absolute repositories (like the others -p options after).
+- the option -s need to accept only the integers 0 (for boolean False) and (for boolean True)
 
-Example of TSP file "dataSet_*10*_*0*.tsp" in "test/" repository with *h = 5* :
+Example of TSP file "dataSet_*10*_*0*.tsp" in "test/" repository with *h = 5* (non symmetric):
 
-    sh generator.py -n 10 -i 0 -h 5 -p "test/"
+    sh generator.py -n 10 -i 0 -h 5 -p "test/" -s 0
 
 #### How to use the shell file "multi_generator.sh" :
 
@@ -70,7 +74,7 @@ This shell file is used to generate *nb_instances* TSP dataSet files "dataSet_*n
 
 This files are stored in the repository at the path *p* (by default, the file is written in the repository 
 "data/tsp_files/" from the project root) with *h* the highest integer weight generated for the instances (by default, 
-it is 100).
+it is 100). *s* indicates if the TSP instances have to be symmetric or not (by default, non symmetric). 
 
 Command line to use at the root project :
 
@@ -80,6 +84,7 @@ Optional arguments of this command :
 
     -p [path_to_tsp_dataSet_files]
     -h [highest_integer_weight]
+    -s [is_weight_matrices_symmetric]
 
 
 #### How to use the shell file "compute_heuristic.sh" :

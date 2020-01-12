@@ -2,6 +2,8 @@
 
 HIGHEST_WEIGHT="100"
 TSP_FILES_PATH="data/tsp_files/"
+SYMMETRIC=0
+
 while [[ $# -gt 0 ]]
 do
 key="$1"
@@ -23,6 +25,10 @@ case $key in
     HIGHEST_WEIGHT="$2"
     shift
     ;;
+    -s)
+    SYMMETRIC="$2"
+    shift
+    ;;
     *)
         echo "Argument inconnu: ${1}"
         exit
@@ -35,5 +41,5 @@ done
 for ((instance_id = 0; instance_id < $NB_INSTANCES; instance_id++))
 do
   echo "$TSP_FILES_PATH""dataSet_""$NB_CITIES""_$instance_id.tsp"
-  ./generator.sh -n "$NB_CITIES" -i "$instance_id" -p "$TSP_FILES_PATH" -h "$HIGHEST_WEIGHT"
+  ./generator.sh -n "$NB_CITIES" -i "$instance_id" -p "$TSP_FILES_PATH" -h "$HIGHEST_WEIGHT" -s "SYMMETRIC"
 done
