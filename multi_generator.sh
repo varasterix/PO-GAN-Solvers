@@ -41,5 +41,5 @@ done
 for ((instance_id = 0; instance_id < $NB_INSTANCES; instance_id++))
 do
   echo "$TSP_FILES_PATH""dataSet_""$NB_CITIES""_$instance_id.tsp"
-  ./generator.sh -n "$NB_CITIES" -i "$instance_id" -p "$TSP_FILES_PATH" -h "$HIGHEST_WEIGHT" -s "SYMMETRIC"
+  ./generator.sh -n "$NB_CITIES" -i "$instance_id" -p "$TSP_FILES_PATH" -h "$HIGHEST_WEIGHT" -s "$SYMMETRIC"
 done
