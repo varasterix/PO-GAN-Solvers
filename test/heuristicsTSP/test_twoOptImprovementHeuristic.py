@@ -63,6 +63,16 @@ class TestTwoOptImprovementHeuristicMethods(unittest.TestCase):
         ordered_path_case_1 = OrderedPath(np.array([0, 3, 4, 1, 2], dtype=int), distance_matrix_case_2)  # d = 14
         self.assertTrue(case_2.get_total_weight() >= 14)
 
+    def test_two_opt_improvement_heuristic_non_symmetric(self):
+        weight_matrix = np.array([[0, 5, 1, 10, 1],
+                                  [1, 0, 1, 8, 1],
+                                  [1, 15, 0, 4, 6],
+                                  [8, 1, 2, 0, 2],
+                                  [9, 7, 0, 1, 0]], dtype=int)
+        ordered_path = OrderedPath(np.array([0, 1, 2, 3, 4], dtype=int), weight_matrix)
+        with self.assertRaises(Exception):
+            TwoOptImprovementHeuristic(ordered_path)
+
 
 if __name__ == '__main__':
     unittest.main()
