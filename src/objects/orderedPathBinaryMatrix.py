@@ -159,3 +159,5 @@ class OrderedPathBinaryMatrix(CandidateTSP):
                                       len(np.where(city_bin_j == 0)[0]) == (self.__nb_cities - 1))
                 j += 1
         return is_valid_structure
+
+
