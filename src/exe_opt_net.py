@@ -28,8 +28,8 @@ def train(model, train_set):
         output = model(input_data)  # calls the forward function
         candidate = OrderedPathBinaryMatrix(np.array(output.detach(), dtype=int)
                                             .reshape((nb_cities, nb_cities)).transpose(), weight_matrix)
-        result = torch.tensor([int(candidate.is_solution())], dtype=torch.float, requires_grad=True)
-        target = torch.tensor([1], dtype=torch.float, requires_grad=True)
+        result = torch.tensor([int(candidate.get_nb_duplicates())], dtype=torch.float, requires_grad=True)
+        target = torch.tensor([0], dtype=torch.float, requires_grad=True)
 
         loss = model.loss_function(result, target)
 
@@ -53,8 +53,8 @@ def valid(model, valid_set):
         output = model(input_data)
         candidate = OrderedPathBinaryMatrix(np.array(output.detach(), dtype=int)
                                             .reshape((nb_cities, nb_cities)).transpose(), weight_matrix)
-        result = Variable(torch.tensor([int(candidate.is_solution())], dtype=torch.float, requires_grad=True))
-        target = Variable(torch.tensor([1], dtype=torch.float, requires_grad=True))
+        result = Variable(torch.tensor([int(candidate.get_nb_duplicates())], dtype=torch.float, requires_grad=True))
+        target = Variable(torch.tensor([0], dtype=torch.float, requires_grad=True))
         valid_loss += model.loss_function(result, target)  # sum up batch loss
         pred = result.data.max(0, keepdim=True)[1].type(torch.float)  # get the index of the max log-probability
         correct += (pred.eq(target.data.view_as(pred))).cpu().sum()
@@ -80,8 +80,8 @@ def test(model, test_set):
         output = model(input_data)
         candidate = OrderedPathBinaryMatrix(np.array(output.detach(), dtype=int)
                                             .reshape((nb_cities, nb_cities)).transpose(), weight_matrix)
-        result = torch.tensor([int(candidate.is_solution())], dtype=torch.float, requires_grad=True)
-        target = torch.tensor([1], dtype=torch.float, requires_grad=True)
+        result = torch.tensor([int(candidate.get_nb_duplicates())], dtype=torch.float, requires_grad=True)
+        target = torch.tensor([0], dtype=torch.float, requires_grad=True)
 
         test_loss += model.loss_function(result, target)  # sum up batch loss
         pred = result.data.max(0, keepdim=True)[1].type(torch.float)  # get the index of the max log-probability
