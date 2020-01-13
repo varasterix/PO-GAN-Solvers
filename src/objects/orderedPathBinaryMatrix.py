@@ -160,4 +160,16 @@ class OrderedPathBinaryMatrix(CandidateTSP):
                 j += 1
         return is_valid_structure
 
-
+    def get_nb_duplicates(self):
+        if not self.is_valid_structure():
+            raise Exception('The candidate has not a valid structure')
+        else:
+            done = [0] * self.__nb_cities
+            nb_duplicates = 0
+            for i in range(self.__nb_cities):
+                city_i = np.where(self.__binary_matrix[:, i] == 1)[0][0]
+                if done[city_i] == 0:
+                    done[city_i] = 1
+                else:
+                    nb_duplicates += 1
+            return nb_duplicates
