@@ -15,25 +15,34 @@ class GAN:
         self.generator = Generator()
         self.discriminator = Discriminator()
 
-        self.loss_function = torch.nn.MSELoss()
+        self.loss_function = torch.nn.CrossEntropyLoss(
 
-    def train(self, epochs=1, batch_size=128):
+        )
+
+    def train(self, epochs=1000, batch_size=128):
         weightmatrix = np.random.randint(0, 100, (10, 10))
         for epoch in range(epochs):
-            input = torch.randn(1,requires_grad=True)
-            output = self.generator(input)
-            nbm = neighboursBinaryMatrix.NeighboursBinaryMatrix(np.array(output.detach(),
-                                                                dtype=int).reshape((10, 10)).transpose(),
-                                                                weightmatrix)
-            neighbor_candidate = nbm.to_neighbours().get_candidate()
-            nb_cycle_pred = torch.tensor([nb_cycles(neighbor_candidate)], dtype=torch.float,requires_grad=True)
-            nb_cycle = torch.tensor([1], dtype=torch.float,requires_grad=True)
+            avg_loss = 0
+            for iter in range(batch_size):
+                if iter % 2 == 0:
 
-            loss = self.loss_function(nb_cycle_pred, nb_cycle)
+                    input = torch.randn(1, requires_grad=True)
+                    output = self.generator(input)
+                    nbm = neighboursBinaryMatrix.NeighboursBinaryMatrix(np.array(output.detach(),
+                                                                        dtype=int).reshape((10, 10)).transpose(),
+                                                                        weightmatrix)
+                    nb_cycle_pred = torch.tensor([nbm.get_nb_cycles()], dtype=torch.float, requires_grad=True)
+                    nb_cycle = torch.tensor([1], dtype=torch.float, requires_grad=True)
 
-            self.generator.optimizer.zero_grad()
-            loss.backward()
-            self.generator.optimizer.step()
+                    loss = self.loss_function(nb_cycle_pred, nb_cycle)
+                    avg_loss += loss
+
+                    self.generator.optimizer.zero_grad()
+                    loss.backward()
+                    self.generator.optimizer.step()
+            avg_loss /= batch_size
+            print("average loss at epoch " + str(epoch) + ": " + str(avg_loss))
+        return
 
 
 gan = GAN()
