@@ -1,13 +1,16 @@
 import org.chocosolver.solver.Model;
+import org.chocosolver.solver.Solution;
 import org.chocosolver.solver.Solver;
 import org.chocosolver.solver.variables.IntVar;
+
+import java.io.*;
 
 public class Main {
 
     public static final int NB_TSP = 2000; // Number of instances to create
     public static final int NB_CITIES = 10; // Number of cities for each instance
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
 
         // Create the model
         for (int i=0; i<NB_TSP; i++) { // Loop for all instances
@@ -30,8 +33,22 @@ public class Main {
             // Search the best solution
             solver.showSolutions();
 //            solver.showShortStatistics();
-            solver.findOptimalSolution(z, false);
+            Solution sol = solver.findOptimalSolution(z, false);
+
+            // Print solution to a .txt file
+            String res = "";
+            for (int k=0; k<successors.length; k++) {
+                res += sol.getIntVal(successors[k]) + "\t";
+            }
+
+            PrintWriter writer = new PrintWriter(
+                    String.format("dataSet_%d_%d.tsp", tsp.getNb_cities(), i), "UTF-8");
+            writer.println(i);
+            writer.println(tsp.getNb_cities());
+            writer.println(tsp.toString());
+            writer.println(res);
+            writer.println(sol.getIntVal(z));
+            writer.close();
         }
     }
-
 }
