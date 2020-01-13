@@ -36,20 +36,19 @@ public class Main {
             Solution sol = solver.findOptimalSolution(z, false);
 
             // Print solution to a .txt file
-            String res = "[";
-            for (int k=0; k<successors.length-1; k++) {
-                res += sol.getIntVal(successors[k]) + ",";
+            String res = "";
+            for (int k=0; k<successors.length; k++) {
+                res += sol.getIntVal(successors[k]) + "\t";
             }
-            res += sol.getIntVal(successors[successors.length - 1]) + "]";
+
             PrintWriter writer = new PrintWriter(
                     String.format("dataSet_%d_%d.tsp", tsp.getNb_cities(), i), "UTF-8");
             writer.println(i);
             writer.println(tsp.getNb_cities());
             writer.println(tsp.toString());
-            writer.println(res +"\n");
+            writer.println(res);
             writer.println(sol.getIntVal(z));
             writer.close();
         }
     }
-
 }
