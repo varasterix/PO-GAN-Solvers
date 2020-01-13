@@ -18,6 +18,12 @@ class OptimizationNet(nn.Module):
 
     # the definition of the activation functions
     def forward(self, x):
+        print("beggining")
+        print(x)
         x = F.relu(self.fc1(x))
+        print("after")
+        print(x)
         x = max_over_columns(self.fc2(x))
+        print("end")
+        print(x)
         return x
