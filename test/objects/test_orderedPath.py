@@ -99,7 +99,7 @@ class TestOrderedPathMethods(unittest.TestCase):
 
     def test_get_nb_duplicates(self):
         self.assertEqual(ordered_path_1.get_nb_duplicates(), 0)
-        self.assertEqual(ordered_path_2.get_nb_duplicates(), 1)
+        self.assertEqual(ordered_path_2b.get_nb_duplicates(), 1)
         self.assertEqual(ordered_path_9.get_nb_duplicates(), 3)
         with self.assertRaises(Exception):
             ordered_path_3.get_nb_duplicates()
