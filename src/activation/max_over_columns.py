@@ -13,7 +13,6 @@ def max_over_columns(input):
         for index in range(index_min, index_max):
             if index == index_max_value:
                 input.detach().numpy()[index] = 1
-                print("yo")
             else:
                 input.detach().numpy()[index] = 0
     return input
