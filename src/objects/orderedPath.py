@@ -170,5 +170,13 @@ class OrderedPath(CandidateTSP):
                                     done[j] = 1
                                     nb_duplicates += 1
                     done[i] = 1
+            """
+            for i in range(self.__nb_cities):
+                city_i = self.__ordered_path[i]
+                if done[city_i] == 0:
+                    done[city_i] = 1
+                else:
+                    nb_duplicates += 1
+            """
             return nb_duplicates
 
