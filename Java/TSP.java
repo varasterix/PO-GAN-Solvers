@@ -6,10 +6,11 @@ public class TSP {
     public TSP(int nb_cities) {
         this.nb_cities = nb_cities;
         this.matrix = new int[this.nb_cities][this.nb_cities];
-        for (int i=0; i<this.nb_cities; i++) {
-            for (int j=0; j<nb_cities; j++) {
-                this.matrix[i][j] = (int)(Math.random() * 1000);
+        for (int i = 0; i < this.nb_cities; i++) {
+            for (int j = 0; j < nb_cities; j++) {
+                this.matrix[i][j] = (int) (Math.random() * 1000);
             }
+            this.matrix[i][i] = 0;
         }
     }
 
@@ -23,19 +24,16 @@ public class TSP {
 
     @Override
     public String toString() {
-        String res = "[";
-        for (int i=0; i<this.getNb_cities(); i++) {
-            for (int j=0; j<this.getNb_cities() - 1; j++) {
-                res += this.getMatrix()[i][j] + ", ";
+        String res = "";
+        for (int i = 0; i < this.getMatrix().length - 1; i++) {
+            for (int j = 0; j < this.getMatrix().length; j++) {
+                res += this.getMatrix()[i][j] + "\t";
             }
+            res += "\n";
         }
-        res += this.getMatrix()[this.getNb_cities() - 1][this.getNb_cities() - 1] + "]";
+        for (int j = 0; j < this.getMatrix().length; j++) {
+            res += this.getMatrix()[this.getNb_cities() - 1][j] + "\t";
+        }
         return res;
-    }
-
-    public static void main(String[] args) {
-        int nb_cities = 10;
-        TSP tsp = new TSP(nb_cities);
-        System.out.println(tsp.toString());
     }
 }
