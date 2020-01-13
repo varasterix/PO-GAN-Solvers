@@ -176,6 +176,6 @@ class NeighboursBinaryMatrix(CandidateTSP):
                     while visited[j] < 1:
                         visited[j] += 1
                         j = np.where(self.__binary_matrix[:, j] == 1)[0][0]  # it gets the neighbor of the city j
-                    if j != first_index:
-                        return 0
+                    # if j != first_index:
+                        # return 0
             return nb_cycles

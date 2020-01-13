@@ -15,25 +15,6 @@ from src.objects.orderedPathBinaryMatrix import OrderedPathBinaryMatrix
 from src.objects.objectsTools import normalize_weight_matrix
 
 
-# Parameters
-tsp_database_path = "../data/tsp_files/"
-train_proportion = 0.8
-valid_proportion = 0.1
-test_proportion = 0.1
-
-# Execution script
-tsp_database_files = [file_name for file_name in os.listdir(tsp_database_path)
-                      if file_name.split('.')[1] == 'heuristic']
-random.shuffle(tsp_database_files)
-tsp_database_size = len(tsp_database_files)
-
-bound_1 = round(train_proportion * tsp_database_size)
-bound_2 = round((train_proportion + valid_proportion) * tsp_database_size)
-train_data = tsp_database_files[0:bound_1]
-valid_data = tsp_database_files[bound_1:bound_2]
-test_data = tsp_database_files[bound_2:]
-
-
 def train(model, train_set):
     model.train()
     for index, data_file in enumerate(train_set):
@@ -126,16 +107,35 @@ def experiment(model, epochs=50, lr=0.001):
     return best_model, best_precision
 
 
-Models = [OptimizationNet()]
-best_precision_ = 0
-best_model_ = Models[0]
-for model_ in Models:  # add your models in the list
-    model_, precision_ = experiment(model_)
-    if precision_ > best_precision_:
-        best_precision_ = precision_
-        best_model_ = model_
+if __name__ == '__main__':
+    # Parameters
+    tsp_database_path = "../data/tsp_files/"
+    train_proportion = 0.8
+    valid_proportion = 0.1
+    test_proportion = 0.1
 
-test(best_model_, test_data)
+    # Execution script
+    tsp_database_files = [file_name for file_name in os.listdir(tsp_database_path)
+                          if file_name.split('.')[1] == 'heuristic']
+    random.shuffle(tsp_database_files)
+    tsp_database_size = len(tsp_database_files)
+
+    bound_1 = round(train_proportion * tsp_database_size)
+    bound_2 = round((train_proportion + valid_proportion) * tsp_database_size)
+    train_data = tsp_database_files[0:bound_1]
+    valid_data = tsp_database_files[bound_1:bound_2]
+    test_data = tsp_database_files[bound_2:]
+
+    Models = [OptimizationNet()]
+    best_precision = 0
+    best_model = Models[0]
+    for model in Models:  # add your models in the list
+        model, precision = experiment(model)
+        if precision > best_precision:
+            best_precision = precision
+            best_model = model
+
+    test(best_model, test_data)
 
 """
 train_data = FashionMNIST('../data', train=True, download=True, transform=transforms.Compose([ transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,)) ]))
