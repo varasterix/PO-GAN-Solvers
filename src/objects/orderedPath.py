@@ -163,13 +163,12 @@ class OrderedPath(CandidateTSP):
         else:
             for i in range(self.__nb_cities):
                 if done[i] == 0:
-                    elt = self.__ordered_path[i]
                     if i != self.__nb_cities-1:
-                        for j in range(i+1,self.__nb_cities):
+                        for j in range(i+1, self.__nb_cities):
                             if done[j] == 0:
                                 if self.__ordered_path[i] == self.__ordered_path[j]:
-                                    done[j] == 1
+                                    done[j] = 1
                                     nb_duplicates += 1
-                    done[i]=1
+                    done[i] = 1
             return nb_duplicates
 
