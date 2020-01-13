@@ -4,6 +4,7 @@ import src.objects.orderedPath as oP
 import src.objects.neighbours as n
 import src.objects.neighboursBinaryMatrix as nBM
 import src.objects.orderedPathBinaryMatrix as oPBM
+import src.objects.objectsTools as objTools
 
 
 def solve_with_two_opt_improvement_heuristic(initial_ordered_path, time_limit):
@@ -37,7 +38,7 @@ def solve_with_two_opt_improvement_heuristic(initial_ordered_path, time_limit):
                                             + weight_matrix[current_o_p_array[i], current_o_p_array[(j+1) % nb_cities]])
                         if new_total_weight < current_total_weight:
                             current_total_weight = new_total_weight
-                            current_o_p_array = new_ordered_path_array
+                            current_o_p_array = np.copy(new_ordered_path_array)
 
                 if memory_total_weight == current_total_weight:
                     spent_time = time_limit  # The end of the function is forced
@@ -82,7 +83,7 @@ class TwoOptImprovementHeuristic:
         Computes an improved solution of a given initial solution of an instance of the TSP with the 2-opt improvement
         heuristic in a given time limit
         :param initial_solution: solution of an instance of the TSP problem (can be of any class which extends the
-        abstract class "CandidateTSP")
+        abstract class "CandidateTSP") (the weight/distance matrix HAS TO BE SYMMETRIC)
         :param time_limit: time limit to compute the improved solution (unit = seconds, default time_limit = 1s)
         """
         if isinstance(initial_solution, oP.OrderedPath):
@@ -95,9 +96,12 @@ class TwoOptImprovementHeuristic:
             initial_ordered_path = initial_solution.to_ordered_path()
         else:
             raise Exception('The initial_solution has to be from any class extending the abstract class CandidateTSP')
-        ordered_path, total_weight = solve_with_two_opt_improvement_heuristic(initial_ordered_path, time_limit)
-        self.__ordered_path = ordered_path
-        self.__total_weight = total_weight
+        if not objTools.is_weight_matrix_symmetric(initial_ordered_path.get_weight_matrix()):
+            raise Exception('The weight matrix of the initial_solution has to be symmetric')
+        else:
+            ordered_path, total_weight = solve_with_two_opt_improvement_heuristic(initial_ordered_path, time_limit)
+            self.__ordered_path = ordered_path
+            self.__total_weight = total_weight
 
     def __eq__(self, other):
         """

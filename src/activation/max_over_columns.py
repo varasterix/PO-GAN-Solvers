@@ -18,8 +18,9 @@ def max_over_columns(input):
     return input
 
 
-input = torch.randn(1)
-x = F.relu(nn.Linear(1, 25)(input))
-print(x.detach().numpy())
-max_over_columns(x)
-print(x.detach().numpy())
+if __name__ == '__main__':
+    input = torch.randn(1)
+    x = F.relu(nn.Linear(1, 25)(input))
+    print(x.detach().numpy())
+    max_over_columns(x)
+    print(x.detach().numpy())
