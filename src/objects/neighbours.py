@@ -173,6 +173,6 @@ class Neighbours(CandidateTSP):
                     while visited[j] < 1:
                         visited[j] += 1
                         j = self.__neighbours_array[j]
-                    if j != first_index:
-                        return 0
+                    # if j != first_index:
+                        # return 0
             return nb_cycles
