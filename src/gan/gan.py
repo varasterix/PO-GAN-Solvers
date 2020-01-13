@@ -20,33 +20,17 @@ class GAN:
 
         )
 
-    def train(self, epochs=1000, batch_size=128):
+    def train(self, epochs=1000, batch_size=100):
         dataset = []
         for i in range(2000):
             dataset.append(databaseTools.read_tsp_heuristic_solution_file(10, i))
 
         for epoch in range(epochs):
-            avg_loss = 0
-            for iter in range(batch_size):
-                if iter % 2 == 0:
-
-                    input = torch.randn(1, requires_grad=True)
-                    output = self.generator(input)
-                    nbm = neighboursBinaryMatrix.NeighboursBinaryMatrix(np.array(output.detach(),
-                                                                        dtype=int).reshape((10, 10)).transpose(),
-                                                                        dataset)
-                    nb_cycle_pred = torch.tensor([nbm.get_nb_cycles()], dtype=torch.float, requires_grad=True)
-                    nb_cycle = torch.tensor([1], dtype=torch.float, requires_grad=True)
-
-                    loss = self.loss_function(nb_cycle_pred, nb_cycle)
-                    avg_loss += loss
-
-                    self.generator.optimizer.zero_grad()
-                    loss.backward()
-                    self.generator.optimizer.step()
-            avg_loss /= batch_size
-            print("average loss at epoch " + str(epoch) + ": " + str(avg_loss))
-        return
+            wm = []  # weight matrix
+            can = []  # candidate
+            for j in range(20):
+                wm += [dataset[k][0].get_weight_matrix() for k in range(j*batch_size, (j+1)*batch_size)]
+                can += [dataset[k][0].get_candidate() for k in range(j*batch_size, (j+1)*batch_size)]
 
 
 gan = GAN()
