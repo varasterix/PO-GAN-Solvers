@@ -16,8 +16,11 @@ from src.objects.objectsTools import normalize_weight_matrix
 
 
 def train(model, train_set):
-    model.train()
+    #model.train()
+    nb_dup=0
+    nb=0
     for index, data_file in enumerate(train_set):
+        nb+=1
         details = data_file.split('.')[0].split('_')
         nb_cities, instance_id = int(details[1]), int(details[2])
         ordered_path, total_weight = read_tsp_heuristic_solution_file(nb_cities, instance_id, tsp_database_path)
@@ -30,13 +33,13 @@ def train(model, train_set):
                                             .reshape((nb_cities, nb_cities)).transpose(), weight_matrix)
         result = torch.tensor([int(candidate.get_nb_duplicates())], dtype=torch.float, requires_grad=True)
         target = torch.tensor([0], dtype=torch.float, requires_grad=True)
-
+        nb_dup += int(candidate.get_nb_duplicates())
         loss = model.loss_function(result, target)
 
         # model.optimizer.zero_grad()
         loss.backward()
         model.optimizer.step()
-    return model
+    return model,float(nb_dup)/nb
 
 
 def valid(model, valid_set):
@@ -107,6 +110,15 @@ def experiment(model, epochs=50, lr=0.001):
     return best_model, best_precision
 
 
+def test_nb_duplicates(train_set,model=OptimizationNet(), epochs=5):
+    nb_dup = []
+    for epoch in range(1, epochs + 1):
+        random.shuffle(train_set)
+        model, average_target = train(model, train_set)  # optimizer)
+        nb_dup.append(average_target)
+    return nb_dup
+
+"""
 if __name__ == '__main__':
     # Parameters
     tsp_database_path = "../data/tsp_files/"
@@ -136,6 +148,26 @@ if __name__ == '__main__':
             best_model = model
 
     test(best_model, test_data)
+"""
+
+
+if __name__ == '__main__':
+    tsp_database_path = "../data/tsp_files/"
+
+    train_set = [file_name for file_name in os.listdir(tsp_database_path)
+                          if file_name.split('.')[1] == 'heuristic']
+    random.shuffle(train_set)
+    tsp_database_size = len(train_set)
+    train_set=train_set[:20]
+    nb_dup = test_nb_duplicates(train_set)
+    print(nb_dup)
+
+
+
+
+
+
+
 
 """
 train_data = FashionMNIST('../data', train=True, download=True, transform=transforms.Compose([ transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,)) ]))
