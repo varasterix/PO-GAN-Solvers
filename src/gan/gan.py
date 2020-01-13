@@ -26,9 +26,9 @@ class GAN:
         # weightmatrix = np.random.randint(0, 100, (10, 10))
 
         # configure data loader
-        os.makedirs("/test/tsp_database/", exist_ok=True)
-        dataloader = torch.utils.data.DataLoader(databaseTools.read_tsp_heuristic_solution_file(
-            10, [i for i in range(2000)]))
+        os.makedirs("../../test/tsp_database/", exist_ok=True)
+        for i in range(2000):
+            dataloader = torch.utils.data.DataLoader(databaseTools.read_tsp_heuristic_solution_file(10, i))
 
         for epoch in range(epochs):
             avg_loss = 0
