@@ -21,6 +21,7 @@ ordered_path_5 = OrderedPath(np.array([1, "c", 2, 3, 0]), distance_matrix_5)
 ordered_path_6 = OrderedPath(np.array([1, 4, 2, 3, 0]), distance_matrix_5[:2, :3])
 ordered_path_7 = OrderedPath(np.array([4, 2, 3, 1, 1]), distance_matrix_5)
 ordered_path_8 = OrderedPath(np.array([3, 0, 4, 2, 1], dtype=int), distance_matrix_5)  # solution d = 8+1+0+15+8 = 32
+ordered_path_9 = OrderedPath(np.array([3, 0, 0, 0, 3], dtype=int), distance_matrix_5)
 
 
 class TestOrderedPathMethods(unittest.TestCase):
@@ -95,6 +96,14 @@ class TestOrderedPathMethods(unittest.TestCase):
         self.assertFalse(ordered_path_1 == ordered_path_8)
         self.assertTrue(ordered_path_1 == ordered_path_1b)
         self.assertTrue(ordered_path_1 == ordered_path_1c)
+
+    def test_get_nb_duplicates(self):
+        self.assertEqual(ordered_path_1.get_nb_duplicates(), 0)
+        self.assertEqual(ordered_path_2.get_nb_duplicates(), 1)
+        self.assertEqual(ordered_path_9.get_nb_duplicates(), 3)
+        with self.assertRaises(Exception):
+            ordered_path_3.get_nb_duplicates()
+            ordered_path_5.get_nb_duplicates()
 
 
 if __name__ == '__main__':
