@@ -52,6 +52,12 @@ ordered_path_binary_matrix_8 = \
                                       [0, 0, 0, 1, 0],
                                       [1, 0, 0, 0, 0],
                                       [0, 0, 1, 0, 0]], dtype=int), distance_matrix_5)  # solution d = 8+1+0+15+8 = 32
+ordered_path_binary_matrix_9 = \
+    OrderedPathBinaryMatrix(np.array([[1, 0, 1, 1, 0],
+                                      [0, 0, 0, 0, 0],
+                                      [0, 0, 0, 0, 0],
+                                      [0, 1, 0, 0, 1],
+                                      [0, 0, 0, 0, 0]], dtype=int), distance_matrix_5)
 
 
 class TestOrderedPathMethods(unittest.TestCase):
@@ -115,6 +121,14 @@ class TestOrderedPathMethods(unittest.TestCase):
         self.assertFalse(ordered_path_binary_matrix_1 == ordered_path_binary_matrix_8)
         self.assertTrue(ordered_path_binary_matrix_1 == ordered_path_binary_matrix_1b)
         self.assertTrue(ordered_path_binary_matrix_1 == ordered_path_binary_matrix_1c)
+
+    def test_get_nb_duplicates(self):
+        self.assertEqual(ordered_path_binary_matrix_1.get_nb_duplicates(), 0)
+        self.assertEqual(ordered_path_binary_matrix_2.get_nb_duplicates(), 1)
+        self.assertEqual(ordered_path_binary_matrix_9.get_nb_duplicates(), 3)
+        with self.assertRaises(Exception):
+            ordered_path_binary_matrix_3.get_nb_duplicates()
+            ordered_path_binary_matrix_5.get_nb_duplicates()
 
 
 if __name__ == '__main__':
