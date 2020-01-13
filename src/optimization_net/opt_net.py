@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from src.activation.max_over_columns import max_over_columns
+from src.activation.max_over_columns import max_over_columns_opt_net
 
 
 # The class of the model
@@ -19,5 +19,5 @@ class OptimizationNet(nn.Module):
     # the definition of the activation functions
     def forward(self, x):
         x = F.relu(self.fc1(x))
-        x = max_over_columns(self.fc2(x))
+        x = max_over_columns_opt_net(self.fc2(x))
         return x

@@ -154,3 +154,18 @@ class OrderedPath(CandidateTSP):
                     is_valid_structure = False
                 i += 1
         return is_valid_structure
+
+    def get_nb_duplicates(self):
+        done = [0]*self.__nb_cities
+        nb_duplicates = 0
+        if not self.is_valid_structure():
+            raise Exception('The candidate has not a valid structure')
+        else:
+            for i in range(self.__nb_cities):
+                city_i = self.__ordered_path[i]
+                if done[city_i] == 0:
+                    done[city_i] = 1
+                else:
+                    nb_duplicates += 1
+            return nb_duplicates
+
