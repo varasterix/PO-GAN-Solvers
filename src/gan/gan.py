@@ -29,7 +29,7 @@ class GAN:
 
         b = 0
         for epoch in range(epochs):
-            batch = dataset[b:b+batch_size]
+            batch = dataset[b*batch_size:(b+1)*batch_size]
             for data in batch:
 
                 # Discriminator training
