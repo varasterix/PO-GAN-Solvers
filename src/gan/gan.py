@@ -28,6 +28,8 @@ class GAN:
             dataset.append(databaseTools.read_tsp_heuristic_solution_file(10, i))
 
         for epoch in range(epochs):
+            avg_g_loss = 0.
+            avg_d_loss = 0.
             for j in range(2000):
 
                 # Discriminator training
@@ -48,6 +50,7 @@ class GAN:
                 predicted_output_d = self.discriminator(input_d)
 
                 d_loss = self.loss_function(output_d, predicted_output_d)
+                avg_d_loss += d_loss.item()
 
                 d_loss.backward()
                 self.discriminator.optimizer.step()
@@ -61,6 +64,7 @@ class GAN:
                 predicted_output_d = self.discriminator(input_d)
 
                 d_loss = self.loss_function(output_d, predicted_output_d)
+                avg_d_loss += d_loss.item()
 
                 d_loss.backward()
                 self.discriminator.optimizer.step()
@@ -72,9 +76,15 @@ class GAN:
                 predicted_output_g = self.discriminator(input_g)
 
                 g_loss = self.loss_function(output_g, predicted_output_g)
+                avg_g_loss += g_loss.item()
 
                 g_loss.backward()
                 self.generator.optimizer.step()
+            avg_d_loss /= 4000
+            avg_g_loss /= 2000
+            print("epoch: " + str(epoch) + ": average loss of generator: " + str(avg_g_loss))
+            print("epoch: " + str(epoch) + ": average loss of discriminator: " + str(avg_d_loss))
+        return
 
 
 gan = GAN()
