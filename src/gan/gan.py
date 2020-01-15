@@ -41,8 +41,9 @@ class GAN:
                 for k in range(len(can_solver)):
                     binary_can_solver[k*10+can_solver[k]] = 1
                 label = [0]
+                binary_can_solver = torch.tensor(binary_can_solver, dtype=torch.float, requires_grad=True)
 
-                input_d = torch.tensor(binary_can_solver, dtype=torch.float, requires_grad=True)
+                input_d = torch.tensor(torch.cat((binary_can_solver, wm), 0), dtype=torch.float, requires_grad=True)
                 output_d = torch.tensor(label, dtype=torch.float, requires_grad=True)
                 predicted_output_d = self.discriminator(input_d)
 
@@ -55,7 +56,7 @@ class GAN:
                 can_gen = self.generator(wm)
                 label = [1]
 
-                input_d = torch.tensor(can_gen, dtype=torch.float, requires_grad=True)
+                input_d = torch.tensor(torch.cat((can_gen, wm), 0), dtype=torch.float, requires_grad=True)
                 output_d = torch.tensor(label, dtype=torch.float, requires_grad=True)
                 predicted_output_d = self.discriminator(input_d)
 
@@ -66,7 +67,7 @@ class GAN:
 
                 # Generator training
                 self.generator.optimizer.zero_grad()
-                input_g = can_gen
+                input_g = torch.cat((can_gen, wm), 0)
                 output_g = torch.tensor(label, dtype=torch.float, requires_grad=True)
                 predicted_output_g = self.discriminator(input_g)
 
