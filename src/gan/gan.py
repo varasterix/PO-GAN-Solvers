@@ -27,16 +27,18 @@ class GAN:
         for i in range(2000):
             dataset.append(databaseTools.read_tsp_heuristic_solution_file(10, i))
 
+        b = 0
         for epoch in range(epochs):
-            for j in range(2000):
+            batch = dataset[b:b+batch_size]
+            for data in batch:
 
                 # Discriminator training
                 self.discriminator.optimizer.zero_grad()
 
-                wm = dataset[j][0].get_weight_matrix().reshape(100)
+                wm = data[0].get_weight_matrix().reshape(100)
                 wm = torch.tensor(wm, dtype=torch.float, requires_grad=True)
 
-                can_solver = dataset[j][0].get_candidate()
+                can_solver = data[0].get_candidate()
                 binary_can_solver = [0 for k in range(100)]
                 for k in range(len(can_solver)):
                     binary_can_solver[k*10+can_solver[k]] = 1
@@ -75,6 +77,11 @@ class GAN:
 
                 g_loss.backward()
                 self.generator.optimizer.step()
+
+                if epoch == epochs:
+                    b = 0
+                else:
+                    b += 1
 
 
 gan = GAN()
