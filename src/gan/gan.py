@@ -28,10 +28,6 @@ class GAN:
             dataset.append(databaseTools.read_tsp_heuristic_solution_file(10, i))
 
         for epoch in range(epochs):
-            wm = []  # weight matrix
-            can_solver = []  # candidate
-            can_gen = []
-            labels = []
             for j in range(2000):
 
                 # Discriminator training
@@ -56,7 +52,6 @@ class GAN:
                 self.discriminator.optimizer.step()
 
                 self.discriminator.optimizer.zero_grad()
-
                 can_gen = self.generator(wm)
                 label = [1]
 
@@ -72,14 +67,13 @@ class GAN:
                 # Generator training
                 self.generator.optimizer.zero_grad()
                 input_g = can_gen
-                input_g = torch.tensor(input_g, dtype=torch.float, requires_grad=True)
                 output_g = torch.tensor(label, dtype=torch.float, requires_grad=True)
                 predicted_output_g = self.discriminator(input_g)
 
                 g_loss = self.loss_function(output_g, predicted_output_g)
 
                 g_loss.backward()
-                self.generator.optimizer().step()
+                self.generator.optimizer.step()
 
 
 gan = GAN()
