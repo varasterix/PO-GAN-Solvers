@@ -19,5 +19,5 @@ class Generator(nn.Module):
     def forward(self, x):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
-        x = F.softmax(torch.reshape(self.fc3(x), (10, 10)))
+        x = torch.reshape(F.softmax(torch.reshape(self.fc3(x), (10, 10))), (100,))
         return x
