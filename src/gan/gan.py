@@ -13,86 +13,74 @@ def shuffle_list(*ls):
     return zip(*l)
 
 
-class GAN:
-    def __init__(self):
-        self.input_shape = 10
+generator = Generator()
+discriminator = Discriminator()
 
-        self.generator = Generator()
-        self.discriminator = Discriminator()
+loss_function = torch.nn.MSELoss()
 
-        self.loss_function = torch.nn.MSELoss()
+epochs = 100
+dataset = []
+for i in range(2000):
+    dataset.append(databaseTools.read_tsp_heuristic_solution_file(10, i))
 
-    def train(self, epochs=1000, batch_size=100):
-        dataset = []
-        for i in range(2000):
-            dataset.append(databaseTools.read_tsp_heuristic_solution_file(10, i))
+d_optimizer = torch.optim.SGD(discriminator.parameters(), lr=0.001)
+g_optimizer = torch.optim.SGD(generator.parameters(), lr=0.001)
 
-        b = 0
-        for epoch in range(epochs):
-            avg_g_loss = 0.
-            avg_d_loss = 0.
-            batch = dataset[b*batch_size:(b+1)*batch_size]
-            for data in batch:
+for epoch in range(epochs):
+    avg_g_loss = 0.
+    avg_d_loss = 0.
+    avg_fake_d_loss = 0.
+    batch = dataset[:]
+    for data in batch:
 
-                # Discriminator training
-                self.discriminator.optimizer.zero_grad()
+        # Discriminator training
+        d_optimizer.zero_grad()
 
-                wm = data[0].get_weight_matrix().reshape(100)
-                wm = torch.tensor(wm, dtype=torch.float, requires_grad=True)
+        wm = data[0].get_weight_matrix().reshape(100)
+        wm = torch.tensor(wm, dtype=torch.float, requires_grad=True)
 
-                can_solver = data[0].get_candidate()
-                binary_can_solver = [0 for k in range(100)]
-                for k in range(len(can_solver)):
-                    binary_can_solver[k*10+can_solver[k]] = 1
-                label = [0]
-                binary_can_solver = torch.tensor(binary_can_solver, dtype=torch.float, requires_grad=True)
+        can_solver = data[0].get_candidate()
+        binary_can_solver = [0 for k in range(100)]
+        for k in range(len(can_solver)):
+            binary_can_solver[k*10+can_solver[k]] = 1
+        label = [0]
+        binary_can_solver = torch.tensor(binary_can_solver, dtype=torch.float, requires_grad=True)
 
-                input_d = torch.tensor(torch.cat((binary_can_solver, wm), 0), dtype=torch.float, requires_grad=True)
-                output_d = torch.tensor(label, dtype=torch.float, requires_grad=True)
-                predicted_output_d = self.discriminator(input_d)
+        input_d = binary_can_solver
+        output_d = torch.tensor(label, dtype=torch.float, requires_grad=True)
+        predicted_output_d = discriminator(input_d)
 
-                d_loss = self.loss_function(output_d, predicted_output_d)
-                avg_d_loss += d_loss.item()
+        valid_d_loss = loss_function(output_d, predicted_output_d)
 
-                d_loss.backward()
-                self.discriminator.optimizer.step()
+        can_gen = generator(wm)
+        label = [1]
 
-                self.discriminator.optimizer.zero_grad()
-                can_gen = self.generator(wm)
-                label = [1]
+        input_d = can_gen
+        output_d = torch.tensor(label, dtype=torch.float, requires_grad=True)
+        predicted_output_d = discriminator(input_d)
 
-                input_d = torch.tensor(torch.cat((can_gen, wm), 0), dtype=torch.float, requires_grad=True)
-                output_d = torch.tensor(label, dtype=torch.float, requires_grad=True)
-                predicted_output_d = self.discriminator(input_d)
+        fake_d_loss = loss_function(output_d, predicted_output_d)
+        d_loss = (valid_d_loss + fake_d_loss) / 2
+        avg_d_loss += d_loss.item()
 
-                d_loss = self.loss_function(output_d, predicted_output_d)
-                avg_d_loss += d_loss.item()
+        d_loss.backward()
+        d_optimizer.step()
 
-                d_loss.backward()
-                self.discriminator.optimizer.step()
+        # Generator training
+        label = [0]
+        g_optimizer.zero_grad()
+        input_g = can_gen
+        output_g = torch.tensor(label, dtype=torch.float, requires_grad=True)
+        predicted_output_g = discriminator(torch.reshape(torch.tensor(F.one_hot(torch.argmax(
+            torch.reshape(input_g.detach(), (10, 10)), dim=1), num_classes=10), dtype=torch.float), (100,)))
 
-                # Generator training
-                self.generator.optimizer.zero_grad()
-                input_g = torch.cat((can_gen, wm), 0)
-                output_g = torch.tensor(label, dtype=torch.float, requires_grad=True)
-                predicted_output_g = self.discriminator(input_g)
+        g_loss = loss_function(output_g, predicted_output_g)
+        avg_g_loss += g_loss.item()
 
-                g_loss = self.loss_function(output_g, predicted_output_g)
-                avg_g_loss += g_loss.item()
-
-                g_loss.backward()
-                self.generator.optimizer.step()
-
-                avg_d_loss /= 4000
-                avg_g_loss /= 2000
-                print("epoch: " + str(epoch) + ": average loss of generator: " + str(avg_g_loss))
-                print("epoch: " + str(epoch) + ": average loss of discriminator: " + str(avg_d_loss))
-                if epoch == epochs:
-                    b = 0
-                else:
-                    b += 1
-            return
-
-
-gan = GAN()
-gan.train()
+        g_loss.backward()
+        g_optimizer.step()
+    avg_d_loss /= 2000
+    avg_g_loss /= 2000
+    print(predicted_output_d.item())
+    print("epoch: " + str(epoch + 1) + ": average loss of generator: " + str(avg_g_loss))
+    print("epoch: " + str(epoch + 1) + ": average loss of discriminator: " + str(avg_d_loss))
