@@ -69,12 +69,13 @@ Example of TSP file "dataSet_*10*_*0*.tsp" in "test/" repository with *h = 5* (n
 
 #### How to use the shell file "multi_generator.sh" :
 
-This shell file is used to generate *nb_instances* TSP dataSet files "dataSet_*n*_*i*.tsp" (with *i* between *0* and 
-*(nb_instances-1)*). 
+This shell file is used to generate *nb_instances* TSP dataSet files "dataSet_*n*_*i*.tsp" (with *i* between *f* and 
+(*f + nb_instances - 1*)). 
 
 This files are stored in the repository at the path *p* (by default, the file is written in the repository 
 "data/tsp_files/" from the project root) with *h* the highest integer weight generated for the instances (by default, 
-it is 100). *s* indicates if the TSP instances have to be symmetric or not (by default, non symmetric). 
+it is *100*). *s* indicates if the TSP instances have to be symmetric or not (by default, non symmetric). *f* indicates 
+the first instance id to generate (by default, it is *0*).
 
 Command line to use at the root project :
 
@@ -85,6 +86,7 @@ Optional arguments of this command :
     -p [path_to_tsp_dataSet_files]
     -h [highest_integer_weight]
     -s [is_weight_matrices_symmetric]
+    -f [first_instance_id]
 
 
 #### How to use the shell file "compute_heuristic.sh" :
@@ -110,10 +112,11 @@ Optional arguments of this command :
 #### How to use the shell file "multi_compute_heuristic.sh" :
 
 This shell file is used to generate *nb_instances* TSP dataSet heuristic solution files "dataSet_*n*_*i*.heuristic" 
-(with *i* between *0* and *(nb_instances-1)*). 
+(with *i* between *f* and (*f + nb_instances - 1*)). 
 
 This files are stored in the repository at the path *p* (by default, "data/tsp_files/") with *l* the time in seconds to 
 improve the nearest neighbor greedy solution with 2-opt heuristic improvement (10s by default).
+*f* indicates the first instance id to solve (by default, it is *0*).
 
 Command line to use at the root project :
 
@@ -123,3 +126,4 @@ Optional arguments of this command :
 
     -p [path_to_tsp_dataSet_files]
     -l [time_limit_two_opt]
+    -f [first_instance_id]
