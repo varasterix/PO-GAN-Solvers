@@ -16,8 +16,6 @@ def shuffle_list(*ls):
 generator = Generator()
 discriminator = Discriminator()
 
-loss_function = torch.nn.MSELoss()
-
 epochs = 100
 dataset = []
 for i in range(2000):
@@ -47,19 +45,19 @@ for epoch in range(epochs):
         binary_can_solver = torch.tensor(binary_can_solver, dtype=torch.float, requires_grad=True)
 
         input_d = binary_can_solver
-        output_d = torch.tensor(label, dtype=torch.float, requires_grad=True)
+        output_d = torch.tensor(label, dtype=torch.float, requires_grad=False)
         predicted_output_d = discriminator(input_d)
 
-        valid_d_loss = loss_function(output_d, predicted_output_d)
+        valid_d_loss = F.binary_cross_entropy(predicted_output_d, output_d)
 
         can_gen = generator(wm)
         label = [1]
 
         input_d = can_gen
-        output_d = torch.tensor(label, dtype=torch.float, requires_grad=True)
+        output_d = torch.tensor(label, dtype=torch.float, requires_grad=False)
         predicted_output_d = discriminator(input_d)
 
-        fake_d_loss = loss_function(output_d, predicted_output_d)
+        fake_d_loss = F.binary_cross_entropy(predicted_output_d, output_d)
         d_loss = (valid_d_loss + fake_d_loss) / 2
         avg_d_loss += d_loss.item()
 
@@ -70,17 +68,16 @@ for epoch in range(epochs):
         label = [0]
         g_optimizer.zero_grad()
         input_g = can_gen
-        output_g = torch.tensor(label, dtype=torch.float, requires_grad=True)
+        output_g = torch.tensor(label, dtype=torch.float, requires_grad=False)
         predicted_output_g = discriminator(torch.reshape(torch.tensor(F.one_hot(torch.argmax(
             torch.reshape(input_g.detach(), (10, 10)), dim=1), num_classes=10), dtype=torch.float), (100,)))
 
-        g_loss = loss_function(output_g, predicted_output_g)
+        g_loss = F.binary_cross_entropy(predicted_output_g, output_g)
         avg_g_loss += g_loss.item()
 
         g_loss.backward()
         g_optimizer.step()
     avg_d_loss /= 2000
     avg_g_loss /= 2000
-    print(predicted_output_d.item())
     print("epoch: " + str(epoch + 1) + ": average loss of generator: " + str(avg_g_loss))
     print("epoch: " + str(epoch + 1) + ": average loss of discriminator: " + str(avg_d_loss))
