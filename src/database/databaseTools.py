@@ -108,20 +108,21 @@ def compute_tsp_heuristic_solution(nb_cities, instance_id, path="data/tsp_files/
     return None
 
 
-def read_tsp_heuristic_solution_file(nb_cities, instance_id, path="data/tsp_files/"):
+def read_tsp_heuristic_solution_file(nb_cities, instance_id, path="../../test/tsp_database/"):
     """
     Imports a solution (object OrderedPath containing the weight/distance matrix) and the total cost/weight/distance of
-    this solution corresponding to the TSP dataSet heuristic solution file "dataSet_<n>_<instance_id>.heuristic"
+    this solution corresponding to the TSP dataSet heuristic solution file "dataSet_<n>_<instance_id>.tsp"
     :param nb_cities: the number of cities of the instance of the TSP dataSet file considered
     :param instance_id: the instance id for the instances of the TSP with "nb_cities" studied
     :param path: the path from the project root of the TSP dataSet file considered
     :return: a solution (object OrderedPath containing the weight/distance matrix) corresponding to the TSP dataSet
-    file "dataSet_<n>_<instance_id>.heuristic" considered, and the total cost/weight/distance of this solution
+    file "dataSet_<n>_<instance_id>.tsp" considered, and the total cost/weight/distance of this solution
     """
-    heuristic_file = open(path + "dataSet_" + str(nb_cities) + "_" + str(instance_id) + ".heuristic", 'r')
+    heuristic_file = open(path + "dataSet_" + str(nb_cities) + "_" + str(instance_id) + ".tsp", 'r')
     weight_matrix = np.zeros((nb_cities, nb_cities), dtype=int)
     ordered_path, total_weight = [], 0
     for i, line in enumerate(heuristic_file):
+        line = line[:-1]
         if 2 <= i < (2 + nb_cities):
             for j, w_ij in enumerate(line[:-1].split('\t')):
                 weight_matrix[i - 2, j] = int(w_ij)
