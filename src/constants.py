@@ -1,0 +1,4 @@
+PARAMETER_DATA_PATH = "data/"
+PARAMETER_TSP_DATA_FILES = "data/tsp_files/"
+PARAMETER_FIGURE_RESULTS_PATH = "res/figures/"
+PARAMETER_TSP_CHOCO_DATA_FILES = "test/tsp_database/"
