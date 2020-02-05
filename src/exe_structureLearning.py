@@ -34,7 +34,7 @@ def build_target_from_output(output, nb_cities):
     return Variable(torch.tensor(target, dtype=torch.float), requires_grad=True)
 
 
-def train(model, train_set, optimizer):
+def train(model, train_set, optimizer, tsp_database_path):
     model.train()
     sum_duplicates = 0
     sum_solution = 0
@@ -64,14 +64,14 @@ def train(model, train_set, optimizer):
     return model
 
 
-def valid(model, valid_set, epoch):
+def valid(model, valid_set, epoch, tsp_database_path):
     model.eval()
     valid_loss = 0
     correct = 0
     sum_duplicates = 0
     sum_solution = 0
     random.shuffle(valid_set)
-    for data_file in valid_data:
+    for data_file in valid_set:
         details = data_file.split('.')[0].split('_')
         nb_cities, instance_id = int(details[1]), int(details[2])
         ordered_path, total_weight = read_tsp_heuristic_solution_file(nb_cities, instance_id, tsp_database_path)
@@ -99,7 +99,7 @@ def valid(model, valid_set, epoch):
     return correct / valid_set_size, valid_loss, sum_duplicates
 
 
-def test(model, test_set):
+def test(model, test_set, tsp_database_path):
     model.eval()
     test_loss = 0
     correct = 0
@@ -125,7 +125,7 @@ def test(model, test_set):
         test_loss, correct, test_set_size, 100. * correct / test_set_size))
 
 
-def experiment(model, epochs, lr, train_set, valid_set):
+def experiment(model, epochs, lr, train_set, valid_set, tsp_database_path):
     best_precision = 0
     best_model = model
     accuracy_by_epochs = []
@@ -135,8 +135,8 @@ def experiment(model, epochs, lr, train_set, valid_set):
     optimizer = optim.SGD(model.parameters(), lr=lr)
 
     for epoch in range(1, epochs + 1):
-        model = train(model, train_set, optimizer)
-        precision, loss, duplicates = valid(model, valid_set, epoch)
+        model = train(model, train_set, optimizer, tsp_database_path)
+        precision, loss, duplicates = valid(model, valid_set, epoch, tsp_database_path)
         accuracy_by_epochs.append(precision)
         valid_loss_by_epochs.append(loss)
         duplicates_by_epochs.append(duplicates)
@@ -149,7 +149,7 @@ def experiment(model, epochs, lr, train_set, valid_set):
 
 if __name__ == '__main__':
     # Parameters
-    tsp_database_path = "../" + constants.PARAMETER_TSP_DATA_FILES
+    tsp_heuristic_database_path = "../" + constants.PARAMETER_TSP_DATA_FILES
     number_cities = 10
     train_proportion = 0.8
     valid_proportion = 0.1
@@ -160,7 +160,7 @@ if __name__ == '__main__':
     learning_rate = 0.001
 
     # Preparation of the TSP dataSet
-    tsp_database_files = [file_name for file_name in os.listdir(tsp_database_path)
+    tsp_database_files = [file_name for file_name in os.listdir(tsp_heuristic_database_path)
                           if file_name.split('.')[1] == 'heuristic']
     random.shuffle(tsp_database_files)
     tsp_database_size = len(tsp_database_files)
@@ -179,13 +179,14 @@ if __name__ == '__main__':
     results = []
     for model_ in Models:
         model_, precision_, accuracy_by_epochs_, valid_loss_by_epochs_, duplicates_by_epochs_ = \
-            experiment(model_, epochs=nb_epochs, lr=learning_rate, train_set=train_data, valid_set=valid_data)
+            experiment(model_, epochs=nb_epochs, lr=learning_rate, train_set=train_data,
+                       valid_set=valid_data, tsp_database_path=tsp_heuristic_database_path)
         results.append((model_.name, accuracy_by_epochs_, valid_loss_by_epochs_, duplicates_by_epochs_))
         if precision_ > best_precision_:
             best_precision_ = precision_
             best_model_ = model_
 
-    test(best_model_, test_data)
+    test(best_model_, test_data, tsp_heuristic_database_path)
 
     # PLOT SECTION
     # Warning section about the plot
