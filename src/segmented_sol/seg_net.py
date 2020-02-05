@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-# from src.activation.max_over_columns import max_over_columns_opt_net
 
 
 # The class of the model
@@ -22,9 +21,5 @@ class SegNet(nn.Module):
     def forward(self, x):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
-        x = F.softmax(torch.reshape(self.fc3(x), (1,self.nb_cities)) , dim=1)  # torch.float32
-        # x = max_over_columns_opt_net(self.fc2(x))
-        # There are no networks that do ordinary backprop through argmax
-        # https://www.reddit.com/r/MachineLearning/comments/4e2get/argmax_differentiable/
-        # x = torch.argmax(x, dim=1)  # dtype=torch.int64
+        x = F.softmax(self.fc3(x), dim=1)
         return x
