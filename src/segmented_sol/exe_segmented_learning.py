@@ -16,172 +16,153 @@ import src.objects.orderedPath as oP
 
 def train(model, train_set, optimizer, tsp_database_path):
     model.train()
-    sum_solution = 0
-    total_solutions = 0
     random.shuffle(train_set)
-    average_distance = 0
-    nb_files = 0
-    best_average = 0
+    sum_predictions = 0
+    sum_predicted_distances = 0
+    sum_target_distances = 0
+    instances_nb_cities = int(train_set[0].split('.')[0].split('_')[1])
     for data_file in train_set:
         details = data_file.split('.')[0].split('_')
         nb_cities, instance_id = int(details[1]), int(details[2])
         ordered_path, total_weight = read_tsp_heuristic_solution_file(nb_cities, instance_id, tsp_database_path)
-        weight_matrix = ordered_path.get_weight_matrix()
-        weight_matrix = normalize_weight_matrix(weight_matrix).reshape((1, nb_cities * nb_cities))
-        TARGET = ordered_path.get_candidate()
-        nb_files += 1
-        best_average += ordered_path.distance()
+        formatted_weight_matrix = \
+            normalize_weight_matrix(ordered_path.get_weight_matrix()).reshape((1, nb_cities * nb_cities))
+        candidate_target = ordered_path.get_candidate()
+        sum_target_distances += int(ordered_path.distance())
         path = np.zeros(nb_cities, dtype=int)
-        path[0] = TARGET[0]
-        for i in range(nb_cities-1):
-            visited_cities = np.zeros(nb_cities)
+        path[0] = candidate_target[0]
+        for i in range(nb_cities - 1):
+            # Building the array of the visited cities
+            visited_cities = np.zeros((1, nb_cities))
             for k in range(i):
-                visited_cities[TARGET[k]] = 1
-            visited_cities = visited_cities.reshape((1, nb_cities))
-            current_city = np.zeros(nb_cities)
-            current_city[TARGET[i]] = 1
-            current_city = current_city.reshape((1, nb_cities))
-            input_net = np.concatenate((weight_matrix, visited_cities, current_city), axis=1)
-            input_data = Variable(torch.tensor(input_net,
-                                               dtype=torch.float), requires_grad=True)
-
+                visited_cities[0, candidate_target[k]] = 1
+            # Building the one-hot array of the current city
+            current_city_one_hot = np.zeros((1, nb_cities))
+            current_city_one_hot[0, candidate_target[i]] = 1
+            # Building the input of the neural network
+            input_data = Variable(torch.tensor(
+                np.concatenate((formatted_weight_matrix, visited_cities, current_city_one_hot), axis=1),
+                dtype=torch.float), requires_grad=True)
+            # Building the expected target
+            target_one_hot = np.zeros((1, nb_cities))
+            target_one_hot[0, candidate_target[i + 1]] = 1
+            target = Variable(torch.tensor(target_one_hot, dtype=torch.float), requires_grad=True)
+            # Training number (i+1)/nb_cities for the considered TSP instance
             optimizer.zero_grad()
             output = model(input_data)  # calls the forward function
-
-            target = np.zeros(nb_cities)
-            target[TARGET[i+1]] = 1
-            target = target.reshape((1 , nb_cities))
-            target = Variable(torch.tensor(target, dtype=torch.float), requires_grad=True)
-            """print("output")
-            print(output)
-            print("target")
-            print(target)"""
             loss = model.loss_function(output, target)
             loss.backward()
             optimizer.step()
+
+            predicted_next_city = np.array(torch.argmax(output.detach(), dim=1), dtype=int)
+            sum_predictions += int(predicted_next_city == candidate_target[i + 1])
+            # Building the array of the predicted visited cities
             next_city = 0
             maxi = 0
-            total_solutions += 1
-            output = Variable(output).numpy()
-            output = output[0]
-            for city in range(nb_cities):
-                if output[city] > maxi:
-                    maxi = output[city]
-                    next_city = city
-            if next_city == TARGET[i + 1]:
-                sum_solution += 1
-            next_city = 0
-            maxi = 0
+            np_output = output.detach().numpy()[0]
             for city in range(nb_cities):
                 if not(city in path[:i+1]):
-                    if output[city] > maxi:
-                        maxi = output[city]
+                    if np_output[city] > maxi:
+                        maxi = np_output[city]
                         next_city = city
             path[i+1] = next_city
 
-        average_distance += oP.OrderedPath(path, ordered_path.get_weight_matrix()).distance()
+        candidate_predicted = oP.OrderedPath(path, ordered_path.get_weight_matrix())
+        sum_predicted_distances += int(candidate_predicted.distance())
 
     train_set_size = len(train_set)
-    print('Training indicators : Solution: {}, best average : {}, distance average find by the net : {}'.format(sum_solution / total_solutions, best_average / nb_files, average_distance / nb_files))
+    total_predictions = train_set_size * (instances_nb_cities - 1)
+    print('Training indicators : ' +
+          'Accuracy (predictions): {:.2f}%, Distance average target: {:.2f}, Distance average predicted: {:.2f}'.format(
+              (sum_predictions / total_predictions), sum_target_distances / train_set_size,
+              sum_predicted_distances / train_set_size))
     return model
 
 
 def valid(model, valid_set, epoch, tsp_database_path):
     model.eval()
-    valid_loss=0
     random.shuffle(valid_set)
-    sum_solution = 0
-    total_solutions = 0
+    valid_loss = 0
+    sum_predictions = 0
+    instances_nb_cities = int(valid_set[0].split('.')[0].split('_')[1])
     for data_file in valid_set:
         details = data_file.split('.')[0].split('_')
         nb_cities, instance_id = int(details[1]), int(details[2])
         ordered_path, total_weight = read_tsp_heuristic_solution_file(nb_cities, instance_id, tsp_database_path)
-        weight_matrix = ordered_path.get_weight_matrix()
-        weight_matrix = normalize_weight_matrix(weight_matrix).reshape((1, nb_cities * nb_cities))
-        TARGET = ordered_path.get_candidate()
+        formatted_weight_matrix = \
+            normalize_weight_matrix(ordered_path.get_weight_matrix()).reshape((1, nb_cities * nb_cities))
+        candidate_target = ordered_path.get_candidate()
         for i in range(nb_cities - 1):
-            visited_cities = np.zeros(nb_cities)
+            # Building the array of the visited cities
+            visited_cities = np.zeros((1, nb_cities))
             for k in range(i):
-                visited_cities[TARGET[k]] = 1
-            visited_cities = visited_cities.reshape((1, nb_cities))
-            current_city = np.zeros(nb_cities)
-            current_city[TARGET[i]] = 1
-            current_city = current_city.reshape((1, nb_cities))
-            input_net = np.concatenate((weight_matrix, visited_cities, current_city), axis=1)
-            input_data = Variable(torch.tensor(input_net,
-                                               dtype=torch.float), requires_grad=True)
+                visited_cities[0, candidate_target[k]] = 1
+            # Building the one-hot array of the current city
+            current_city_one_hot = np.zeros((1, nb_cities))
+            current_city_one_hot[0, candidate_target[i]] = 1
+            # Building the input of the neural network
+            input_data = Variable(torch.tensor(
+                np.concatenate((formatted_weight_matrix, visited_cities, current_city_one_hot), axis=1),
+                dtype=torch.float), requires_grad=True)
+            # Building the expected target
+            target_one_hot = np.zeros((1, nb_cities))
+            target_one_hot[0, candidate_target[i + 1]] = 1
+            target = Variable(torch.tensor(target_one_hot, dtype=torch.float), requires_grad=True)
+
             output = model(input_data)  # calls the forward function
-            target = np.zeros(nb_cities)
-            target[TARGET[i + 1]] = 1
-            target = target.reshape((1, nb_cities))
-            target = Variable(torch.tensor(target, dtype=torch.float), requires_grad=True)
-            valid_loss+= model.loss_function(output, target)
+            valid_loss += model.loss_function(output, target)
 
-            next_city = 0
-            maxi = 0
-            total_solutions += 1
-            output = Variable(output).numpy()
-            output = output[0]
-            for city in range(nb_cities):
-                if output[city] > maxi:
-                    maxi = output[city]
-                    next_city = city
-            if next_city == TARGET[i + 1]:
-                sum_solution += 1
-    valid_loss /= total_solutions
+            predicted_next_city = np.array(torch.argmax(output.detach(), dim=1), dtype=int)
+            sum_predictions += int(predicted_next_city == candidate_target[i + 1])
 
+    valid_set_size = len(valid_set)
+    total_predictions = valid_set_size * (instances_nb_cities - 1)
+    valid_loss /= total_predictions
     print('Epoch {} - valid set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-        epoch, valid_loss, sum_solution, total_solutions, 100.* sum_solution/total_solutions))
-    return sum_solution/total_solutions,valid_loss
+        epoch, valid_loss, sum_predictions, total_predictions, 100. * sum_predictions / total_predictions))
+    return sum_predictions / total_predictions, valid_loss
 
 
 def test(model, test_set, tsp_database_path):
     model.eval()
     random.shuffle(test_set)
-    sum_solution = 0
-    total_solutions = 0
+    sum_predictions = 0
     test_loss = 0
+    instances_nb_cities = int(test_set[0].split('.')[0].split('_')[1])
     for data_file in test_set:
         details = data_file.split('.')[0].split('_')
         nb_cities, instance_id = int(details[1]), int(details[2])
         ordered_path, total_weight = read_tsp_heuristic_solution_file(nb_cities, instance_id, tsp_database_path)
-        weight_matrix = ordered_path.get_weight_matrix()
-        weight_matrix = normalize_weight_matrix(weight_matrix).reshape((1, nb_cities * nb_cities))
-        TARGET = ordered_path.get_candidate()
+        formatted_weight_matrix = \
+            normalize_weight_matrix(ordered_path.get_weight_matrix()).reshape((1, nb_cities * nb_cities))
+        candidate_target = ordered_path.get_candidate()
         for i in range(nb_cities - 1):
-            visited_cities = np.zeros(nb_cities)
+            # Building the array of the visited cities
+            visited_cities = np.zeros((1, nb_cities))
             for k in range(i):
-                visited_cities[TARGET[k]] = 1
-            visited_cities = visited_cities.reshape((1, nb_cities))
-            current_city = np.zeros(nb_cities)
-            current_city[TARGET[i]] = 1
-            current_city = current_city.reshape((1, nb_cities))
-            input_net = np.concatenate((weight_matrix, visited_cities, current_city), axis=1)
-            input_data = Variable(torch.tensor(input_net,
-                                               dtype=torch.float), requires_grad=True)
+                visited_cities[0, candidate_target[k]] = 1
+            # Building the one-hot array of the current city
+            current_city_one_hot = np.zeros((1, nb_cities))
+            current_city_one_hot[0, candidate_target[i]] = 1
+            # Building the input of the neural network
+            input_data = Variable(torch.tensor(
+                np.concatenate((formatted_weight_matrix, visited_cities, current_city_one_hot), axis=1),
+                dtype=torch.float), requires_grad=True)
+            # Building the expected target
+            target_one_hot = np.zeros((1, nb_cities))
+            target_one_hot[0, candidate_target[i + 1]] = 1
+            target = Variable(torch.tensor(target_one_hot, dtype=torch.float), requires_grad=True)
 
             output = model(input_data)  # calls the forward function
-            target = np.zeros(nb_cities)
-            target[TARGET[i + 1]] = 1
-            target = target.reshape((1, nb_cities))
-            target = Variable(torch.tensor(target, dtype=torch.float), requires_grad=True)
             test_loss += model.loss_function(output, target)
 
-            next_city = 0
-            maxi = 0
-            total_solutions += 1
-            output = Variable(output).numpy()
-            output = output[0]
-            for city in range(nb_cities):
-                if output[city] > maxi:
-                    maxi = output[city]
-                    next_city = city
-            if next_city == TARGET[i + 1]:
-                sum_solution += 1
-    test_loss /= total_solutions
+            predicted_next_city = np.array(torch.argmax(output.detach(), dim=1), dtype=int)
+            sum_predictions += int(predicted_next_city == candidate_target[i + 1])
 
+    total_predictions = len(test_set) * (instances_nb_cities - 1)
+    test_loss /= total_predictions
     print('\n' + "test" + ' set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-        test_loss, sum_solution, total_solutions, 100. * sum_solution / total_solutions))
+        test_loss, sum_predictions, total_predictions, 100. * sum_predictions / total_predictions))
 
 
 def experiment(model, epochs, lr, train_set, valid_set, tsp_database_path):
@@ -213,7 +194,7 @@ if __name__ == '__main__':
     test_proportion = 0.1
     over_fit_one_instance = False
     Models = [SegNet(number_cities)]  # add your models in the list
-    nb_epochs = 300
+    nb_epochs = 200
     learning_rate = 0.001
 
     # Preparation of the TSP dataSet
@@ -261,8 +242,8 @@ if __name__ == '__main__':
     ax1.set_xlabel("Epochs")
     plt.title("Validation loss, accuracy and TSP metric by epochs and models")
     ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
-    ax3 = ax1.twinx()  # instantiate a third axes that shares the same x-axis
-    ax3.spines["right"].set_position(("axes", 1.2))  # insert a spine for the third y-axis
+    # ax3 = ax1.twinx()  # instantiate a third axes that shares the same x-axis
+    # ax3.spines["right"].set_position(("axes", 1.2))  # insert a spine for the third y-axis
     ax1.set_ylabel("Accuracy")
     ax2.set_ylabel("Loss")
     # ax3.set_ylabel("TSP Metric : Number of duplicates")
@@ -295,5 +276,5 @@ if __name__ == '__main__':
     ax1.set_position([box.x0, box.y0 + box.height * 0.15, box.width, box.height * 0.85])
     ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=nb_results)
 
-    # plt.savefig("../" + constants.PARAMETER_FIGURE_RESULTS_PATH + "SemLearning" + models_name)
+    plt.savefig("../../" + constants.PARAMETER_FIGURE_RESULTS_PATH + "SegmentedLearning" + models_name)
     plt.show()
