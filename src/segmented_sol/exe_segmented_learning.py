@@ -1,11 +1,12 @@
-
 import os
+import warnings
 import random
 import numpy as np
 import matplotlib.pyplot as plt
 import torch
 from torch.autograd import Variable
 from torch import optim
+from src.utils import custom_formatwarning
 from src.database.databaseTools import read_tsp_heuristic_solution_file
 from src.objects.objectsTools import normalize_weight_matrix
 from src import constants
@@ -13,7 +14,7 @@ from src.segmented_sol.seg_net import SegNet
 import src.objects.orderedPath as oP
 
 
-def train(model, train_set, optimizer):
+def train(model, train_set, optimizer, tsp_database_path):
     model.train()
     sum_solution = 0
     total_solutions = 0
@@ -24,7 +25,7 @@ def train(model, train_set, optimizer):
     for data_file in train_set:
         details = data_file.split('.')[0].split('_')
         nb_cities, instance_id = int(details[1]), int(details[2])
-        ordered_path, total_weight = read_tsp_heuristic_solution_file(nb_cities, instance_id, tsp_database_path )
+        ordered_path, total_weight = read_tsp_heuristic_solution_file(nb_cities, instance_id, tsp_database_path)
         weight_matrix = ordered_path.get_weight_matrix()
         weight_matrix = normalize_weight_matrix(weight_matrix).reshape((1, nb_cities * nb_cities))
         TARGET = ordered_path.get_candidate()
@@ -85,8 +86,7 @@ def train(model, train_set, optimizer):
     return model
 
 
-
-def valid(model, valid_set, epoch):
+def valid(model, valid_set, epoch, tsp_database_path):
     model.eval()
     valid_loss=0
     random.shuffle(valid_set)
@@ -135,8 +135,7 @@ def valid(model, valid_set, epoch):
     return sum_solution/total_solutions,valid_loss
 
 
-
-def test(model, test_set):
+def test(model, test_set, tsp_database_path):
     model.eval()
     random.shuffle(test_set)
     sum_solution = 0
@@ -179,13 +178,13 @@ def test(model, test_set):
                     next_city = city
             if next_city == TARGET[i + 1]:
                 sum_solution += 1
-    test_loss /=total_solutions
+    test_loss /= total_solutions
 
     print('\n' + "test" + ' set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
         test_loss, sum_solution, total_solutions, 100. * sum_solution / total_solutions))
 
 
-def experiment(model, epochs, lr, train_set, valid_set):
+def experiment(model, epochs, lr, train_set, valid_set, tsp_database_path):
     best_precision = 0
     best_model = model
     accuracy_by_epochs = []
@@ -194,8 +193,8 @@ def experiment(model, epochs, lr, train_set, valid_set):
     optimizer = optim.SGD(model.parameters(), lr=lr)
 
     for epoch in range(1, epochs + 1):
-        model = train(model, train_set, optimizer)
-        precision, loss = valid(model, valid_set, epoch)
+        model = train(model, train_set, optimizer, tsp_database_path)
+        precision, loss = valid(model, valid_set, epoch, tsp_database_path)
         accuracy_by_epochs.append(precision)
         valid_loss_by_epochs.append(loss)
         if precision > best_precision:
@@ -207,7 +206,7 @@ def experiment(model, epochs, lr, train_set, valid_set):
 
 if __name__ == '__main__':
     # Parameters
-    tsp_database_path = "../../" + constants.PARAMETER_TSP_DATA_FILES
+    tsp_heuristic_database_path = "../../" + constants.PARAMETER_TSP_DATA_FILES
     number_cities = 10
     train_proportion = 0.8
     valid_proportion = 0.1
@@ -218,7 +217,7 @@ if __name__ == '__main__':
     learning_rate = 0.001
 
     # Preparation of the TSP dataSet
-    tsp_database_files = [file_name for file_name in os.listdir(tsp_database_path)
+    tsp_database_files = [file_name for file_name in os.listdir(tsp_heuristic_database_path)
                           if file_name.split('.')[1] == 'heuristic']
     random.shuffle(tsp_database_files)
     tsp_database_size = len(tsp_database_files)
@@ -237,13 +236,14 @@ if __name__ == '__main__':
     results = []
     for model_ in Models:
         model_, precision_, accuracy_by_epochs_, valid_loss_by_epochs_ = \
-            experiment(model_, epochs=nb_epochs, lr=learning_rate, train_set=train_data, valid_set=valid_data)
+            experiment(model_, epochs=nb_epochs, lr=learning_rate, train_set=train_data, valid_set=valid_data,
+                       tsp_database_path=tsp_heuristic_database_path)
         results.append((model_.name, accuracy_by_epochs_, valid_loss_by_epochs_))
         if precision_ > best_precision_:
             best_precision_ = precision_
             best_model_ = model_
 
-    test(best_model_, test_data)
+    test(best_model_, test_data, tsp_heuristic_database_path)
 
     # PLOT SECTION
     # Warning section about the plot
@@ -265,7 +265,7 @@ if __name__ == '__main__':
     ax3.spines["right"].set_position(("axes", 1.2))  # insert a spine for the third y-axis
     ax1.set_ylabel("Accuracy")
     ax2.set_ylabel("Loss")
-    #ax3.set_ylabel("TSP Metric : Number of duplicates")
+    # ax3.set_ylabel("TSP Metric : Number of duplicates")
 
     epochs_ = range(1, len(results[0][1]) + 1)
     models_name = ""
@@ -279,15 +279,15 @@ if __name__ == '__main__':
         # Valid loss curve
         p2, = ax2.plot(epochs_, res[2], linestyle=line_styles[index % len(line_styles)], color='r')
         # Duplicates curve
-        #p3, = ax3.plot(epochs_, res[3], linestyle=line_styles[index % len(line_styles)], color='g')
+        # p3, = ax3.plot(epochs_, res[3], linestyle=line_styles[index % len(line_styles)], color='g')
 
         if index == 0:  # Set color for each y-axis and their label
             ax1.yaxis.label.set_color(p1.get_color())
             ax2.yaxis.label.set_color(p2.get_color())
-            #ax3.yaxis.label.set_color(p3.get_color())
+            # ax3.yaxis.label.set_color(p3.get_color())
             ax1.tick_params(axis='y', colors=p1.get_color())
             ax2.tick_params(axis='y', colors=p2.get_color())
-            #ax3.tick_params(axis='y', colors=p3.get_color())
+            # ax3.tick_params(axis='y', colors=p3.get_color())
 
     fig.tight_layout()  # otherwise the right y-label is slightly clipped
     # Shrink current axis's height by 15% on the bottom + Put a legend below current axis
@@ -295,5 +295,5 @@ if __name__ == '__main__':
     ax1.set_position([box.x0, box.y0 + box.height * 0.15, box.width, box.height * 0.85])
     ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=nb_results)
 
-    #plt.savefig("../" + constants.PARAMETER_FIGURE_RESULTS_PATH + "SemLearning" + models_name)
+    # plt.savefig("../" + constants.PARAMETER_FIGURE_RESULTS_PATH + "SemLearning" + models_name)
     plt.show()
