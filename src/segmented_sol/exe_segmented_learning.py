@@ -10,7 +10,7 @@ from src.database.databaseTools import read_tsp_heuristic_solution_file
 from src.objects.objectsTools import normalize_weight_matrix
 from src import constants
 from src.segmented_sol.seg_net import SegNet
-from src.objects import orderedPath
+import src.objects.orderedPath as oP
 
 
 def train(model, train_set, optimizer):
@@ -30,7 +30,7 @@ def train(model, train_set, optimizer):
         TARGET = ordered_path.get_candidate()
         nb_files += 1
         best_average += ordered_path.distance()
-        path = np.zeros(nb_cities)
+        path = np.zeros(nb_cities, dtype=int)
         path[0] = TARGET[0]
         for i in range(nb_cities-1):
             visited_cities = np.zeros(nb_cities)
@@ -69,12 +69,19 @@ def train(model, train_set, optimizer):
                     next_city = city
             if next_city == TARGET[i + 1]:
                 sum_solution += 1
+            next_city = 0
+            maxi = 0
+            for city in range(nb_cities):
+                if not(city in path[:i+1]):
+                    if output[city] > maxi:
+                        maxi = output[city]
+                        next_city = city
             path[i+1] = next_city
-        path = orderedPath(path, ordered_path.get_weight_matrix())
+
+        average_distance += oP.OrderedPath(path, ordered_path.get_weight_matrix()).distance()
 
     train_set_size = len(train_set)
-    print('Training indicators : Solution: {}'.format(sum_solution / total_solutions))
-    print(average_distance)
+    print('Training indicators : Solution: {}, best average : {}, distance average find by the net : {}'.format(sum_solution / total_solutions, best_average / nb_files, average_distance / nb_files))
     return model
 
 
@@ -207,7 +214,7 @@ if __name__ == '__main__':
     test_proportion = 0.1
     over_fit_one_instance = False
     Models = [SegNet(number_cities)]  # add your models in the list
-    nb_epochs = 50
+    nb_epochs = 300
     learning_rate = 0.001
 
     # Preparation of the TSP dataSet
