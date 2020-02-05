@@ -29,13 +29,13 @@ if __name__ == '__main__':
 
     first_g_loss, last_g_loss = None, None
     first_d_loss, last_d_loss = None, None
+    net_switch = False
     for epoch in range(epochs):
         avg_g_loss = 0.
         avg_d_loss = 0.
         avg_fake_d_loss = 0.
         batch = dataset[:]
         trained_net = 0
-        net_switch = True
         nb_g_loss = 0
         nb_d_loss = 0
         for data in batch:
@@ -43,7 +43,6 @@ if __name__ == '__main__':
             wm = torch.tensor(wm, dtype=torch.float, requires_grad=True)
 
             if trained_net == 0:
-                print("gen training")
                 # Generator training
                 label = [0]
                 g_optimizer.zero_grad()
@@ -55,13 +54,13 @@ if __name__ == '__main__':
                 avg_g_loss += g_loss.item()
                 nb_g_loss += 1
 
-                if net_switch:
+                if net_switch or first_g_loss is None:
                     first_g_loss = g_loss.item()
                     if last_g_loss is None:
                         last_g_loss = first_g_loss
                 else:
                     last_g_loss = g_loss.item()
-                net_switch = last_g_loss < 0.8 * first_g_loss
+                net_switch = last_g_loss < 0.995 * first_g_loss
                 if net_switch:
                     print("switch")
                     trained_net = 1 - trained_net
@@ -70,7 +69,6 @@ if __name__ == '__main__':
                 g_optimizer.step()
 
             else:
-                print("disc training")
                 # Discriminator training
                 d_optimizer.zero_grad()
 
@@ -99,13 +97,13 @@ if __name__ == '__main__':
                 avg_d_loss += d_loss.item()
                 nb_d_loss += 1
 
-                if net_switch:
+                if net_switch or first_d_loss is None:
                     first_d_loss = d_loss.item()
                     if last_d_loss is None:
                         last_d_loss = first_d_loss
                 else:
                     last_d_loss = d_loss.item()
-                net_switch = last_d_loss < 0.8 * first_d_loss
+                net_switch = last_d_loss < 0.99 * first_d_loss
                 if net_switch:
                     print("switch")
                     trained_net = 1 - trained_net
@@ -113,7 +111,7 @@ if __name__ == '__main__':
                 d_loss.backward()
                 d_optimizer.step()
 
-        avg_d_loss /= nb_d_loss
-        avg_g_loss /= nb_g_loss
+        avg_d_loss /= max(1, nb_d_loss)
+        avg_g_loss /= max(1, nb_g_loss)
         print("epoch: " + str(epoch + 1) + ": average loss of generator: " + str(avg_g_loss))
         print("epoch: " + str(epoch + 1) + ": average loss of discriminator: " + str(avg_d_loss))
