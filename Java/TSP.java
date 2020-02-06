@@ -7,15 +7,14 @@ public class TSP {
     public TSP(int nb_cities) {
         this.nb_cities = nb_cities;
         this.points = new Point[this.nb_cities];
-        for (int i=0; i<this.nb_cities; i++) {
-            this.points[i] = new Point();
-        }
+        for (int i=0; i<this.nb_cities; i++) this.points[i] = new Point();
         this.matrix = new int[this.nb_cities][this.nb_cities];
-        for (int j=0; j<this.nb_cities; j++) {
+        for (int j=1; j<this.nb_cities; j++) {
             for (int k=0; k<j; k++) {
                 this.matrix[j][k] = points[j].dist(points[k]);
                 this.matrix[k][j] = this.matrix[j][k];
             }
+            this.matrix [j][j] = 0;
         }
     }
 

@@ -7,7 +7,7 @@ import java.io.*;
 
 public class Main {
 
-    public static final int NB_TSP = 1; // Number of instances to create
+    public static final int NB_TSP = 2000; // Number of instances to create
     public static final int NB_CITIES = 10; // Number of cities for each instance
 
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
@@ -32,15 +32,15 @@ public class Main {
 
             // Search the best solution
             solver.showSolutions();
-//            solver.showShortStatistics();
+            solver.showShortStatistics();
             Solution sol = solver.findOptimalSolution(z, false);
 
             // Print solution to a .txt file
             String res = "";
-            for (int k=0; k<successors.length - 1; k++) {
-                res += sol.getIntVal(successors[k]) + "\t";
+            for (int k=0; k<successors.length; k++) {
+                res += sol.getIntVal(successors[k]);
+                res += (k<successors.length-1) ? "\t" : "";
             }
-            res += sol.getIntVal(successors[successors.length - 1]);
 
             PrintWriter writer = new PrintWriter(
                     String.format("dataSet_%d_%d.choco", tsp.getNb_cities(), i), "UTF-8");
@@ -49,7 +49,7 @@ public class Main {
             writer.println(tsp.toString());
             writer.println(res);
             writer.println(sol.getIntVal(z));
-            for (int k=0; k<tsp.getNb_cities(); k++) writer.println(tsp.getPoints()[k].toString());
+            for (int k=0; k<tsp.getNb_cities(); k++) writer.println(tsp.getPoints()[k]);
             writer.close();
         }
     }
