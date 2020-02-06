@@ -29,7 +29,7 @@ public class Point {
     public String toString() {
         String res = "";
         res += this.getX();
-        res += "    ";
+        res += "\t";
         res += this.getY();
         return res;
     }
