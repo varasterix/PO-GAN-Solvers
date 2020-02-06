@@ -110,7 +110,20 @@ def compute_tsp_heuristic_solution(nb_cities, instance_id, path=constants.PARAME
     return None
 
 
-def read_tsp_heuristic_solution_file(nb_cities, instance_id, path=constants.PARAMETER_TSP_DATA_FILES):
+def read_tsp_nnh_solution_file(nb_cities, instance_id, path=constants.PARAMETER_TSP_NNH_DATA_FILES):
+    """
+    Imports a solution (object OrderedPath containing the weight/distance matrix) and the total cost/weight/distance of
+    this solution corresponding to the TSP dataSet heuristic solution file "dataSet_<n>_<instance_id>.nnh"
+    :param nb_cities: the number of cities of the instance of the TSP dataSet heuristic solution file considered
+    :param instance_id: the instance id for the instances of the TSP with "nb_cities" studied
+    :param path: the path from the project root of the TSP dataSet heuristic solution file considered
+    :return: a solution (object OrderedPath containing the weight/distance matrix) corresponding to the TSP dataSet
+    heuristic solution file "dataSet_<n>_<instance_id>.nnh" considered, and its total cost/weight/distance
+    """
+    return read_tsp_extension_solution_file(nb_cities, instance_id, path, "nnh")
+
+
+def read_tsp_heuristic_solution_file(nb_cities, instance_id, path=constants.PARAMETER_TSP_NNH_TWO_OPT_DATA_FILES):
     """
     Imports a solution (object OrderedPath containing the weight/distance matrix) and the total cost/weight/distance of
     this solution corresponding to the TSP dataSet heuristic solution file "dataSet_<n>_<instance_id>.heuristic"
@@ -120,19 +133,7 @@ def read_tsp_heuristic_solution_file(nb_cities, instance_id, path=constants.PARA
     :return: a solution (object OrderedPath containing the weight/distance matrix) corresponding to the TSP dataSet
     heuristic solution file "dataSet_<n>_<instance_id>.heuristic" considered, and its total cost/weight/distance
     """
-    heuristic_file = open(path + "dataSet_" + str(nb_cities) + "_" + str(instance_id) + ".heuristic", 'r')
-    weight_matrix = np.zeros((nb_cities, nb_cities), dtype=int)
-    ordered_path, total_weight = [], 0
-    for i, line in enumerate(heuristic_file):
-        if 2 <= i < (2 + nb_cities):
-            for j, w_ij in enumerate(line[:-1].split('\t')):
-                weight_matrix[i - 2, j] = int(w_ij)
-        if i == (2 + nb_cities):
-            ordered_path = [int(city) for city in line[:-1].split('\t')]
-        if i == (2 + nb_cities + 1):
-            total_weight = int(line[:-1])
-    heuristic_file.close()
-    return oP.OrderedPath(np.array(ordered_path, dtype=int), weight_matrix), total_weight
+    return read_tsp_extension_solution_file(nb_cities, instance_id, path, "heuristic")
 
 
 def read_tsp_choco_solution_file(nb_cities, instance_id, path=constants.PARAMETER_TSP_CHOCO_DATA_FILES):
@@ -145,11 +146,27 @@ def read_tsp_choco_solution_file(nb_cities, instance_id, path=constants.PARAMETE
     :return: the Choco solution (object OrderedPath containing the weight/distance matrix) corresponding to the TSP
     dataSet file "dataSet_<n>_<instance_id>.choco" considered, and its total cost/weight/distance
     """
-    choco_file = open(path + "dataSet_" + str(nb_cities) + "_" + str(instance_id) + ".choco", 'r')
+    return read_tsp_extension_solution_file(nb_cities, instance_id, path, "choco")
+
+
+def read_tsp_extension_solution_file(nb_cities, instance_id, path, extension):
+    """
+    Imports the solution (object OrderedPath containing the weight/distance matrix and the cartesian coordinates)
+    and its total cost/weight/distance corresponding to the TSP dataSet file "dataSet_<n>_<instance_id>.<extension>"
+    :param nb_cities: the number of cities of the instance of the TSP dataSet file considered (str)
+    :param instance_id: the instance id for the instances of the TSP with "nb_cities" studied (str)
+    :param path: the path from the project root of the TSP dataSet file considered (str)
+    :param extension: the extension of the TSP dataSet file considered (str)
+    :return: the solution (object OrderedPath containing the weight/distance matrix and the cartesian coordinates)
+    corresponding to the TSP dataSet file "dataSet_<n>_<instance_id>.<extension>" considered, and its total
+    cost/weight/distance matrix
+    """
+    solution_file = open(path + "dataSet_" + str(nb_cities) + "_" + str(instance_id) + "." + extension, 'r')
     weight_matrix = np.zeros((nb_cities, nb_cities), dtype=int)
     ordered_path, total_weight = [], 0
     cartesian_coordinates = np.zeros((nb_cities, 2), dtype=int)
-    for i, line in enumerate(choco_file):
+    contain_cartesian_coordinates = False
+    for i, line in enumerate(solution_file):
         if 2 <= i < (2 + nb_cities):
             for j, w_ij in enumerate(line[:-1].split('\t')):
                 weight_matrix[i - 2, j] = int(w_ij)
@@ -158,9 +175,11 @@ def read_tsp_choco_solution_file(nb_cities, instance_id, path=constants.PARAMETE
         elif i == (2 + nb_cities + 1):
             total_weight = int(line[:-1])
         elif (2 + nb_cities + 1) < i:
+            contain_cartesian_coordinates = True
             for j, x_ij in enumerate(line[:-1].split('\t')):
                 cartesian_coordinates[i - nb_cities - 4, j] = int(x_ij)
-    choco_file.close()
+    solution_file.close()
+    cartesian_coordinates = None if not contain_cartesian_coordinates else cartesian_coordinates
     return oP.OrderedPath(np.array(ordered_path, dtype=int), weight_matrix, cartesian_coordinates), total_weight
 
 
