@@ -276,5 +276,5 @@ if __name__ == '__main__':
     ax1.set_position([box.x0, box.y0 + box.height * 0.15, box.width, box.height * 0.85])
     ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=nb_results)
 
-    plt.savefig("../../" + constants.PARAMETER_FIGURE_RESULTS_PATH + "SegmentedLearning" + models_name)
+    plt.savefig("../../" + constants.PARAMETER_FIGURE_RESULTS_PATH + "segmentedLearning" + models_name)
     plt.show()
