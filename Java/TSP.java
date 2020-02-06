@@ -34,17 +34,12 @@ public class TSP {
     @Override
     public String toString() {
         String res = "";
-        for (int i = 0; i < this.getMatrix().length - 1; i++) {
-            for (int j = 0; j < this.getMatrix().length - 1; j++) {
-                res += this.getMatrix()[i][j] + "\t";
+        for (int i=0; i<this.getMatrix().length; i++) {
+            for (int j=0; j<this.getMatrix().length; j++) {
+                res += this.getMatrix()[i][j];
+                res += (j<this.getMatrix().length-1) ? "\t" : ((i<this.getMatrix().length-1) ? "\n" : "");
             }
-            res += this.getMatrix()[i][this.getNb_cities() - 1];
-            res += "\n";
         }
-        for (int j = 0; j < this.getMatrix().length - 1; j++) {
-            res += this.getMatrix()[this.getNb_cities() - 1][j] + "\t";
-        }
-        res += this.getMatrix()[this.getNb_cities() - 1][this.getNb_cities() - 1];
         return res;
     }
 }

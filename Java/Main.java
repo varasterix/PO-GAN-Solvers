@@ -7,7 +7,7 @@ import java.io.*;
 
 public class Main {
 
-    public static final int NB_TSP = 2000; // Number of instances to create
+    public static final int NB_TSP = 1; // Number of instances to create
     public static final int NB_CITIES = 10; // Number of cities for each instance
 
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
@@ -49,9 +49,7 @@ public class Main {
             writer.println(tsp.toString());
             writer.println(res);
             writer.println(sol.getIntVal(z));
-            for (int k=0; k<tsp.getNb_cities(); k++) {
-                writer.println(tsp.getPoints()[k].getX() + "\t" + tsp.getPoints()[k].getY());
-            }
+            for (int k=0; k<tsp.getNb_cities(); k++) writer.println(tsp.getPoints()[k].toString());
             writer.close();
         }
     }
