@@ -162,3 +162,88 @@ def read_tsp_choco_solution_file(nb_cities, instance_id, path=constants.PARAMETE
                 cartesian_coordinates[i - nb_cities - 4, j] = int(x_ij)
     choco_file.close()
     return oP.OrderedPath(np.array(ordered_path, dtype=int), weight_matrix, cartesian_coordinates), total_weight
+
+
+def compute_tsp_nnh_solution_from_choco_database(nb_cities, instance_id,
+                                                 path=constants.PARAMETER_TSP_NNH_DATA_FILES,
+                                                 choco_path=constants.PARAMETER_TSP_CHOCO_DATA_FILES):
+    """
+    Computes the TSP dataSet nearest neighbor heuristic solution file "dataSet_<n>_<instance_id>.nnh" corresponding to
+    the instance of the TSP given by the file "dataSet_<n>_<instance_id>.choco"
+    :param nb_cities: the number of cities of the instance of the TSP dataSet file considered (int)
+    :param instance_id: the instance id for the instances of the TSP with "nb_cities" studied (int)
+    :param path: the path from the project root to store TSP nearest neighbor heuristic solution (str)
+    :param choco_path: the path from the project root of the TSP choco dataSet file considered (str)
+    """
+    choco_ordered_path, total_weight = read_tsp_choco_solution_file(nb_cities, instance_id, choco_path)
+    nnh_path = path + "dataSet_" + str(nb_cities) + "_" + str(instance_id) + ".nnh"
+    nnh_file = open(nnh_path, 'w+')
+    nnh_file.write(str(instance_id) + '\n')
+    nnh_file.write(str(nb_cities) + '\n')
+    nnh_solution = nNH.NearestNeighborHeuristic(choco_ordered_path.get_weight_matrix(),
+                                                choco_ordered_path.get_cartesian_coordinates())
+    for i in range(nb_cities):
+        for j in range(nb_cities):
+            if j == (nb_cities - 1):
+                nnh_file.write(str(nnh_solution.get_weight_matrix()[i, j]) + "\n")
+            else:
+                nnh_file.write(str(nnh_solution.get_weight_matrix()[i, j]) + "\t")
+
+    for i, city in enumerate(nnh_solution.get_ordered_path().get_candidate()):
+        op = "\n" if (i == (nb_cities - 1)) else "\t"
+        nnh_file.write(str(city) + op)
+    nnh_file.write(str(nnh_solution.get_total_weight()) + '\n')
+
+    if choco_ordered_path.get_cartesian_coordinates() is not None:
+        for i in range(nb_cities):
+            for j in range(2):
+                op = "\n" if (j == 1) else "\t"
+                nnh_file.write(str(nnh_solution.get_ordered_path().get_cartesian_coordinates()[i, j]) + op)
+
+    nnh_file.close()
+    return None
+
+
+def compute_tsp_nnh_two_opt_solution_from_choco_database(nb_cities, instance_id,
+                                                         path=constants.PARAMETER_TSP_NNH_TWO_OPT_DATA_FILES,
+                                                         choco_path=constants.PARAMETER_TSP_CHOCO_DATA_FILES,
+                                                         time_limit=1):
+    """
+    Computes the TSP dataSet heuristic solution file "dataSet_<n>_<instance_id>.heuristic" corresponding to the
+    instance of the TSP given by the file "dataSet_<n>_<instance_id>.choco"
+    WARNING: The weight/distance matrix from this instance has to SYMMETRIC, otherwise an Exception is raised
+    :param nb_cities: the number of cities of the instance of the TSP dataSet file considered (int)
+    :param instance_id: the instance id for the instances of the TSP with "nb_cities" studied (int)
+    :param path: the path from the project root to store TSP nearest neighbor + 2-opt heuristic solution (str)
+    :param choco_path: the path from the project root of the TSP choco dataSet file considered (str)
+    :param time_limit: time limit to improve the solution with the 2-opt heuristic (unit = seconds, default = 1s) (int)
+    """
+    choco_ordered_path, total_weight = read_tsp_choco_solution_file(nb_cities, instance_id, choco_path)
+    heuristic_path = path + "dataSet_" + str(nb_cities) + "_" + str(instance_id) + ".heuristic"
+    heuristic_file = open(heuristic_path, 'w+')
+    heuristic_file.write(str(instance_id) + '\n')
+    heuristic_file.write(str(nb_cities) + '\n')
+    nnh_solution = nNH.NearestNeighborHeuristic(choco_ordered_path.get_weight_matrix(),
+                                                choco_ordered_path.get_cartesian_coordinates())
+    two_opt_solution = tOpt.TwoOptImprovementHeuristic(nnh_solution.get_ordered_path(), time_limit)
+
+    for i in range(nb_cities):
+        for j in range(nb_cities):
+            if j == (nb_cities - 1):
+                heuristic_file.write(str(two_opt_solution.get_weight_matrix()[i, j]) + "\n")
+            else:
+                heuristic_file.write(str(two_opt_solution.get_weight_matrix()[i, j]) + "\t")
+
+    for i, city in enumerate(two_opt_solution.get_ordered_path().get_candidate()):
+        op = "\n" if (i == (nb_cities - 1)) else "\t"
+        heuristic_file.write(str(city) + op)
+    heuristic_file.write(str(two_opt_solution.get_total_weight()) + '\n')
+
+    if choco_ordered_path.get_cartesian_coordinates() is not None:
+        for i in range(nb_cities):
+            for j in range(2):
+                op = "\n" if (j == 1) else "\t"
+                heuristic_file.write(str(two_opt_solution.get_ordered_path().get_cartesian_coordinates()[i, j]) + op)
+
+    heuristic_file.close()
+    return None
