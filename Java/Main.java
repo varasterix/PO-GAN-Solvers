@@ -37,17 +37,21 @@ public class Main {
 
             // Print solution to a .txt file
             String res = "";
-            for (int k=0; k<successors.length; k++) {
+            for (int k=0; k<successors.length - 1; k++) {
                 res += sol.getIntVal(successors[k]) + "\t";
             }
+            res += sol.getIntVal(successors[successors.length - 1]);
 
             PrintWriter writer = new PrintWriter(
-                    String.format("dataSet_%d_%d.tsp", tsp.getNb_cities(), i), "UTF-8");
+                    String.format("dataSet_%d_%d.choco", tsp.getNb_cities(), i), "UTF-8");
             writer.println(i);
             writer.println(tsp.getNb_cities());
             writer.println(tsp.toString());
             writer.println(res);
             writer.println(sol.getIntVal(z));
+            for (int k=0; k<tsp.getNb_cities(); k++) {
+                writer.println(tsp.getPoints()[k].getX() + "\t" + tsp.getPoints()[k].getY());
+            }
             writer.close();
         }
     }
