@@ -3,7 +3,7 @@ from src.objects import objectsTools
 import src.objects.orderedPath as oP
 
 
-def solve_with_nearest_neighbors_heuristic(weight_matrix):
+def solve_with_nearest_neighbors_heuristic(weight_matrix, cartesian_coordinates):
     if not objectsTools.is_weight_matrix_valid_structure(weight_matrix):
         raise Exception('The structure of the weight matrix in input is not valid')
     else:
@@ -21,7 +21,7 @@ def solve_with_nearest_neighbors_heuristic(weight_matrix):
             current_city = next_city
         # The cycle is closed
         total_weight += weight_matrix[current_city, first_city]
-        return oP.OrderedPath(np.array(ordered_path, dtype=int), weight_matrix), total_weight
+        return oP.OrderedPath(np.array(ordered_path, dtype=int), weight_matrix, cartesian_coordinates), total_weight
 
 
 def get_nearest_unvisited_neighbor(weight_matrix, current_city, unvisited_cities):
@@ -44,8 +44,8 @@ class NearestNeighborHeuristic:
     of the nearest neighbors. The solution can be of any class which extends the abstract class "CandidateTSP"
     """
 
-    def __init__(self, weight_matrix):
-        ordered_path, total_weight = solve_with_nearest_neighbors_heuristic(weight_matrix)
+    def __init__(self, weight_matrix, cartesian_coordinates=None):
+        ordered_path, total_weight = solve_with_nearest_neighbors_heuristic(weight_matrix, cartesian_coordinates)
         self.__ordered_path = ordered_path
         self.__total_weight = total_weight
 
