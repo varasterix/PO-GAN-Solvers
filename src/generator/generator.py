@@ -10,7 +10,9 @@ class Generator(nn.Module):
         super(Generator, self).__init__()
         self.fc1 = nn.Linear(100, 200)
         self.fc2 = nn.Linear(200, 200)
-        self.fc3 = nn.Linear(200, 100)
+        self.fc3 = nn.Linear(200, 200)
+        self.fc4 = nn.Linear(200, 200)
+        self.fc5 = nn.Linear(200, 100)
 
         params = self.parameters()
         self.optimizer = torch.optim.SGD(params, lr=0.01)
@@ -19,5 +21,7 @@ class Generator(nn.Module):
     def forward(self, x):
         x = F.relu(self.fc1(x))
         x = F.relu(self.fc2(x))
-        x = torch.reshape(F.softmax(torch.reshape(self.fc3(x), (10, 10)), dim=1), (100,))
+        x = F.relu(self.fc3(x))
+        x = F.relu(self.fc4(x))
+        x = torch.reshape(F.softmax(torch.reshape(self.fc5(x), (10, 10)), dim=1), (100,))
         return x
