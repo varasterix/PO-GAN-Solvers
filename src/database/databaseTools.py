@@ -137,26 +137,24 @@ def read_tsp_heuristic_solution_file(nb_cities, instance_id, path=constants.PARA
 
 def read_tsp_choco_solution_file(nb_cities, instance_id, path=constants.PARAMETER_TSP_CHOCO_DATA_FILES):
     """
-    Imports the Choco solution solution (object OrderedPath containing the weight/distance matrix) and its total cost/
-    weight/distance corresponding to the TSP dataSet file "dataSet_<n>_<instance_id>.choco"
+    Imports the Choco solution (object OrderedPath containing the weight/distance matrix and the cartesian coordinates)
+    and its total cost/weight/distance corresponding to the TSP dataSet file "dataSet_<n>_<instance_id>.choco"
     :param nb_cities: the number of cities of the instance of the TSP dataSet file considered
     :param instance_id: the instance id for the instances of the TSP with "nb_cities" studied
     :param path: the path from the project root of the TSP dataSet file considered
     :return: the Choco solution (object OrderedPath containing the weight/distance matrix) corresponding to the TSP
     dataSet file "dataSet_<n>_<instance_id>.choco" considered, and its total cost/weight/distance
     """
-    choco_file = open(path + "dataSet_" + str(nb_cities) + "_" + str(instance_id) + ".tsp", 'r')
+    choco_file = open(path + "dataSet_" + str(nb_cities) + "_" + str(instance_id) + ".choco", 'r')
     weight_matrix = np.zeros((nb_cities, nb_cities), dtype=int)
     ordered_path, total_weight = [], 0
-    cartesian_coordinates = np.zeros((2, nb_cities), dtype=int)
+    cartesian_coordinates = np.zeros((nb_cities, 2), dtype=int)
     for i, line in enumerate(choco_file):
         if 2 <= i < (2 + nb_cities):
-            # A tab was added at the end of the line with Java generator for this step => line[:-1] -> line[:-2]
-            for j, w_ij in enumerate(line[:-2].split('\t')):
+            for j, w_ij in enumerate(line[:-1].split('\t')):
                 weight_matrix[i - 2, j] = int(w_ij)
         elif i == (2 + nb_cities):
-            # A tab was added at the end of the line with Java generator for this step => line[:-1] -> line[:-2]
-            ordered_path = [int(city) for index, city in enumerate(line[:-2].split('\t')) if index < nb_cities]
+            ordered_path = [int(city) for index, city in enumerate(line[:-1].split('\t')) if index < nb_cities]
         elif i == (2 + nb_cities + 1):
             total_weight = int(line[:-1])
         elif (2 + nb_cities + 1) < i:
