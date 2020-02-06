@@ -51,8 +51,6 @@ class TestDatabaseToolsMethods(unittest.TestCase):
                                     [418, 575]], dtype=int)
         self.assertTrue(choco_data[0] == OrderedPath(choco_candidate, choco_weight_matrix, choco_cartesian))
         self.assertTrue(choco_data[1] == choco_total_weight)
-        dT.compute_tsp_nnh_solution_from_choco_database(10, 1, "test/database/", "test/database/")
-        dT.compute_tsp_nnh_two_opt_solution_from_choco_database(10, 1, "test/database/", "test/database/", 5)
 
 
 if __name__ == '__main__':
