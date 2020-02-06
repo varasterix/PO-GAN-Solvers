@@ -18,17 +18,11 @@ public class TSP {
         }
     }
 
-    public int getNb_cities() {
-        return this.nb_cities;
-    }
+    public int getNb_cities() {return this.nb_cities;}
 
-    public Point[] getPoints() {
-        return this.points;
-    }
+    public Point[] getPoints() {return this.points;}
 
-    public int[][] getMatrix() {
-        return this.matrix;
-    }
+    public int[][] getMatrix() {return this.matrix;}
 
     @Override
     public String toString() {

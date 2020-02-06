@@ -32,7 +32,7 @@ public class Main {
 
             // Search the best solution
             solver.showSolutions();
-            solver.showShortStatistics();
+//            solver.showShortStatistics();
             Solution sol = solver.findOptimalSolution(z, false);
 
             // Print solution to a .txt file
@@ -41,7 +41,6 @@ public class Main {
                 res += sol.getIntVal(successors[k]);
                 res += (k<successors.length-1) ? "\t" : "";
             }
-
             PrintWriter writer = new PrintWriter(
                     String.format("dataSet_%d_%d.choco", tsp.getNb_cities(), i), "UTF-8");
             writer.println(i);

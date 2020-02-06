@@ -26,16 +26,5 @@ public class Point {
     }
 
     @Override
-    public String toString() {
-        String res = this.getX() + "\t" + this.getY();
-        return res;
-    }
-
-    public static void main(String[] args) {
-        String res = "";
-        Point a = new Point();
-        res = a.toString();
-        System.out.println(res);
-    }
-
+    public String toString() {return this.getX() + "\t" + this.getY();}
 }
