@@ -48,7 +48,8 @@ def read_tsp_file(nb_cities, instance_id, path=constants.PARAMETER_TSP_DATA_FILE
     return weight_matrix
 
 
-def generate_tsp_file(nb_cities, instance_id, path=constants.PARAMETER_TSP_DATA_FILES, highest_weight=100, symmetric=False):
+def generate_tsp_file(nb_cities, instance_id, path=constants.PARAMETER_TSP_DATA_FILES,
+                      highest_weight=100, symmetric=False):
     """
     Generates the TSP dataSet file "dataSet_<n>_<instance_id>.tsp" for an instance with a given number of cities
     :param nb_cities: the number of cities of the instance of the TSP dataSet file considered (int)
@@ -137,25 +138,29 @@ def read_tsp_heuristic_solution_file(nb_cities, instance_id, path=constants.PARA
 def read_tsp_choco_solution_file(nb_cities, instance_id, path=constants.PARAMETER_TSP_CHOCO_DATA_FILES):
     """
     Imports the Choco solution solution (object OrderedPath containing the weight/distance matrix) and its total cost/
-    weight/distance corresponding to the TSP dataSet file "dataSet_<n>_<instance_id>.tsp"
+    weight/distance corresponding to the TSP dataSet file "dataSet_<n>_<instance_id>.choco"
     :param nb_cities: the number of cities of the instance of the TSP dataSet file considered
     :param instance_id: the instance id for the instances of the TSP with "nb_cities" studied
     :param path: the path from the project root of the TSP dataSet file considered
     :return: the Choco solution (object OrderedPath containing the weight/distance matrix) corresponding to the TSP
-    dataSet file "dataSet_<n>_<instance_id>.tsp" considered, and its total cost/weight/distance
+    dataSet file "dataSet_<n>_<instance_id>.choco" considered, and its total cost/weight/distance
     """
     choco_file = open(path + "dataSet_" + str(nb_cities) + "_" + str(instance_id) + ".tsp", 'r')
     weight_matrix = np.zeros((nb_cities, nb_cities), dtype=int)
     ordered_path, total_weight = [], 0
+    cartesian_coordinates = np.zeros((2, nb_cities), dtype=int)
     for i, line in enumerate(choco_file):
         if 2 <= i < (2 + nb_cities):
             # A tab was added at the end of the line with Java generator for this step => line[:-1] -> line[:-2]
             for j, w_ij in enumerate(line[:-2].split('\t')):
                 weight_matrix[i - 2, j] = int(w_ij)
-        if i == (2 + nb_cities):
+        elif i == (2 + nb_cities):
             # A tab was added at the end of the line with Java generator for this step => line[:-1] -> line[:-2]
             ordered_path = [int(city) for index, city in enumerate(line[:-2].split('\t')) if index < nb_cities]
-        if i == (2 + nb_cities + 1):
+        elif i == (2 + nb_cities + 1):
             total_weight = int(line[:-1])
+        elif (2 + nb_cities + 1) < i:
+            for j, x_ij in enumerate(line[:-1].split('\t')):
+                cartesian_coordinates[i - nb_cities - 4, j] = int(x_ij)
     choco_file.close()
-    return oP.OrderedPath(np.array(ordered_path, dtype=int), weight_matrix), total_weight
+    return oP.OrderedPath(np.array(ordered_path, dtype=int), weight_matrix, cartesian_coordinates), total_weight

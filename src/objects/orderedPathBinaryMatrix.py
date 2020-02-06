@@ -17,10 +17,11 @@ class OrderedPathBinaryMatrix(CandidateTSP):
     And, the fact that 2 ordered path are equal is independent of the beginning of the ordered paths
     """
 
-    def __init__(self, candidate, distance_matrix):
+    def __init__(self, candidate, distance_matrix, cartesian_coordinates=None):
         self.__nb_cities = len(candidate)
         self.__binary_matrix = candidate
         self.__distance_matrix = distance_matrix
+        self.__cartesian_coordinates = cartesian_coordinates
         self.__is_valid_structure = self.is_valid_structure()
 
     def __eq__(self, other):
@@ -28,8 +29,8 @@ class OrderedPathBinaryMatrix(CandidateTSP):
         Note1: The eq function is only comparing two solutions of the TSP
         Note2: The eq function is independent of the beginning of the ordered path of cities
         :param other: an object whose class is OrderedPathBinaryMatrix
-        :return: true if the attributes of the object are equal to the attributes of the other object,
-        and an exception is one of the objects considered are not a solution to the TSP
+        :return: true if the attributes of the object (except the cartesian coordinates) are equal to the attributes of
+        the other object, and an exception is one of the objects considered are not a solution to the TSP
         """
         if not isinstance(other, OrderedPathBinaryMatrix):  # don't attempt to compare against unrelated types
             return NotImplemented
@@ -72,6 +73,9 @@ class OrderedPathBinaryMatrix(CandidateTSP):
     def get_weight_matrix(self):
         return self.__distance_matrix
 
+    def get_cartesian_coordinates(self):
+        return self.__cartesian_coordinates
+
     def is_solution(self):
         """
         :return True if the binary matrix (composed of 0/1) is a solution of the TSP, False otherwise
@@ -113,7 +117,7 @@ class OrderedPathBinaryMatrix(CandidateTSP):
             for i in range(self.__nb_cities):
                 neighbours_array[np.where(self.__binary_matrix[:, i] == 1)[0][0]] = \
                     np.where(self.__binary_matrix[:, (i + 1) % self.__nb_cities] == 1)[0][0]
-            return n.Neighbours(neighbours_array, self.__distance_matrix)
+            return n.Neighbours(neighbours_array, self.__distance_matrix, self.__cartesian_coordinates)
 
     def to_ordered_path(self):
         """
@@ -124,7 +128,8 @@ class OrderedPathBinaryMatrix(CandidateTSP):
             raise Exception('The candidate has not a valid structure')
         else:
             return oP.OrderedPath(np.array([np.where(self.__binary_matrix[:, i] == 1)[0][0]
-                                            for i in range(self.__nb_cities)], dtype=int), self.__distance_matrix)
+                                            for i in range(self.__nb_cities)], dtype=int),
+                                  self.__distance_matrix, self.__cartesian_coordinates)
 
     def to_neighbours_binary_matrix(self):
         """
@@ -138,7 +143,8 @@ class OrderedPathBinaryMatrix(CandidateTSP):
             for i in range(self.__nb_cities):
                 neighbours_binary_matrix[np.where(self.__binary_matrix[:, (i + 1) % self.__nb_cities] == 1)[0][0],
                                          np.where(self.__binary_matrix[:, i] == 1)[0][0]] = 1
-            return nBM.NeighboursBinaryMatrix(neighbours_binary_matrix, self.__distance_matrix)
+            return nBM.NeighboursBinaryMatrix(neighbours_binary_matrix,
+                                              self.__distance_matrix, self.__cartesian_coordinates)
 
     def is_valid_structure(self):
         """
@@ -150,7 +156,10 @@ class OrderedPathBinaryMatrix(CandidateTSP):
                               objectsTools.is_weight_matrix_valid_structure(self.__distance_matrix) and
                               len(self.__distance_matrix) == self.__nb_cities and
                               self.__binary_matrix.shape[1] == self.__nb_cities and
-                              self.__binary_matrix.shape[0] == self.__nb_cities)
+                              self.__binary_matrix.shape[0] == self.__nb_cities and
+                              ((objectsTools.is_cartesian_coordinates_valid_structure(self.__cartesian_coordinates) and
+                                self.__cartesian_coordinates.shape[0] == self.__nb_cities)
+                               or self.__cartesian_coordinates is None))
         if is_valid_structure:
             j = 0
             while is_valid_structure and j < self.__nb_cities:  # verify if there is one 1 and (n-1) 0 by column
