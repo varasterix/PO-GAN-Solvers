@@ -15,18 +15,19 @@ class Neighbours(CandidateTSP):
     That is why this structure is called array of neighbours.
     """
 
-    def __init__(self, candidate, distance_matrix):
+    def __init__(self, candidate, distance_matrix, cartesian_coordinates=None):
         self.__nb_cities = len(candidate)
         self.__neighbours_array = candidate
         self.__distance_matrix = distance_matrix
+        self.__cartesian_coordinates = cartesian_coordinates
         self.__is_valid_structure = self.is_valid_structure()
 
     def __eq__(self, other):
         """
         Note: The eq function is only comparing two solutions of the TSP
         :param other: an object whose class is Neighbours
-        :return: true if the attributes of the object are equal to the attributes of the other object,
-        and an exception is one of the objects considered are not a solution to the TSP
+        :return: true if the attributes of the object (except the cartesian coordinates) are equal to the attributes of
+        the other object, and an exception is one of the objects considered are not a solution to the TSP
         """
         if not isinstance(other, Neighbours):  # don't attempt to compare against unrelated types
             return NotImplemented
@@ -62,6 +63,9 @@ class Neighbours(CandidateTSP):
 
     def get_weight_matrix(self):
         return self.__distance_matrix
+
+    def get_cartesian_coordinates(self):
+        return self.__cartesian_coordinates
 
     def is_solution(self):
         """
@@ -103,7 +107,8 @@ class Neighbours(CandidateTSP):
             binary_matrix = np.zeros((self.__nb_cities, self.__nb_cities), dtype=int)
             for i in range(self.__nb_cities):
                 binary_matrix[self.__neighbours_array[i], i] = 1
-            return nBM.NeighboursBinaryMatrix(binary_matrix, self.__distance_matrix)
+            return nBM.NeighboursBinaryMatrix(binary_matrix, self.__distance_matrix,
+                                              self.__cartesian_coordinates)
 
     def to_ordered_path(self):
         """
@@ -118,7 +123,8 @@ class Neighbours(CandidateTSP):
             for i in range(self.__nb_cities):
                 ordered_path.append(self.__neighbours_array[current_city])
                 current_city = self.__neighbours_array[current_city]
-            return oP.OrderedPath(np.array(ordered_path, dtype=int), self.__distance_matrix)
+            return oP.OrderedPath(np.array(ordered_path, dtype=int), self.__distance_matrix,
+                                  self.__cartesian_coordinates)
 
     def to_ordered_path_binary_matrix(self):
         """
@@ -133,7 +139,8 @@ class Neighbours(CandidateTSP):
             for i in range(self.__nb_cities):
                 path_binary_matrix[self.__neighbours_array[current_city], i] = 1
                 current_city = self.__neighbours_array[current_city]
-            return oPBM.OrderedPathBinaryMatrix(path_binary_matrix, self.__distance_matrix)
+            return oPBM.OrderedPathBinaryMatrix(path_binary_matrix, self.__distance_matrix,
+                                                self.__cartesian_coordinates)
 
     def is_valid_structure(self):
         """
@@ -143,7 +150,10 @@ class Neighbours(CandidateTSP):
         """
         is_valid_structure = (type(self.__neighbours_array) == np.ndarray and self.__neighbours_array.dtype == int and
                               objectsTools.is_weight_matrix_valid_structure(self.__distance_matrix) and
-                              len(self.__distance_matrix) == self.__nb_cities)
+                              len(self.__distance_matrix) == self.__nb_cities and
+                              ((objectsTools.is_cartesian_coordinates_valid_structure(self.__cartesian_coordinates) and
+                                self.__cartesian_coordinates.shape[0] == self.__nb_cities)
+                               or self.__cartesian_coordinates is None))
         if is_valid_structure:
             i = 0
             while is_valid_structure and i < self.__nb_cities:
@@ -169,7 +179,7 @@ class Neighbours(CandidateTSP):
                 j = i
                 if visited[j] == 0:
                     nb_cycles += 1
-                    first_index = j
+                    # first_index = j
                     while visited[j] < 1:
                         visited[j] += 1
                         j = self.__neighbours_array[j]
