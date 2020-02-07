@@ -16,10 +16,11 @@ class OrderedPath(CandidateTSP):
     And, the fact that 2 ordered paths are equal is independent of the beginning of the ordered paths
     """
 
-    def __init__(self, candidate, distance_matrix):
+    def __init__(self, candidate, distance_matrix, cartesian_coordinates=None):
         self.__nb_cities = len(candidate)
         self.__ordered_path = candidate
         self.__distance_matrix = distance_matrix
+        self.__cartesian_coordinates = cartesian_coordinates
         self.__is_valid_structure = self.is_valid_structure()
 
     def __eq__(self, other):
@@ -27,8 +28,8 @@ class OrderedPath(CandidateTSP):
         Note1: The eq function is only comparing two solutions of the TSP
         Note2: The eq function is independent of the beginning of the ordered array of cities
         :param other: an object whose class is OrderedPath
-        :return: true if the attributes of the object are equal to the attributes of the other object,
-        and an exception is one of the objects considered are not a solution to the TSP
+        :return: true if the attributes of the object (except the cartesian coordinates) are equal to the attributes of
+        the other object, and an exception is one of the objects considered are not a solution to the TSP
         """
         if not isinstance(other, OrderedPath):  # don't attempt to compare against unrelated types
             return NotImplemented
@@ -70,6 +71,9 @@ class OrderedPath(CandidateTSP):
     def get_weight_matrix(self):
         return self.__distance_matrix
 
+    def get_cartesian_coordinates(self):
+        return self.__cartesian_coordinates
+
     def is_solution(self):
         """
         :return True if the array of integers is a solution of the TSP, False otherwise
@@ -108,7 +112,7 @@ class OrderedPath(CandidateTSP):
             neighbours_array = np.zeros(self.__nb_cities, dtype=int)
             for i in range(self.__nb_cities):
                 neighbours_array[self.__ordered_path[i]] = self.__ordered_path[(i + 1) % self.__nb_cities]
-            return n.Neighbours(neighbours_array, self.__distance_matrix)
+            return n.Neighbours(neighbours_array, self.__distance_matrix, self.__cartesian_coordinates)
 
     def to_neighbours_binary_matrix(self):
         """
@@ -121,7 +125,7 @@ class OrderedPath(CandidateTSP):
             binary_matrix = np.zeros((self.__nb_cities, self.__nb_cities), dtype=int)
             for i in range(self.__nb_cities):
                 binary_matrix[self.__ordered_path[(i + 1) % self.__nb_cities], self.__ordered_path[i]] = 1
-            return nBM.NeighboursBinaryMatrix(binary_matrix, self.__distance_matrix)
+            return nBM.NeighboursBinaryMatrix(binary_matrix, self.__distance_matrix, self.__cartesian_coordinates)
 
     def to_ordered_path_binary_matrix(self):
         """
@@ -134,7 +138,8 @@ class OrderedPath(CandidateTSP):
             path_binary_matrix = np.zeros((self.__nb_cities, self.__nb_cities), dtype=int)
             for i in range(self.__nb_cities):
                 path_binary_matrix[self.__ordered_path[i], i] = 1
-            return oPBM.OrderedPathBinaryMatrix(path_binary_matrix, self.__distance_matrix)
+            return oPBM.OrderedPathBinaryMatrix(path_binary_matrix, self.__distance_matrix,
+                                                self.__cartesian_coordinates)
 
     def is_valid_structure(self):
         """
@@ -144,7 +149,10 @@ class OrderedPath(CandidateTSP):
         """
         is_valid_structure = (type(self.__ordered_path) == np.ndarray and self.__ordered_path.dtype == int and
                               objectsTools.is_weight_matrix_valid_structure(self.__distance_matrix) and
-                              len(self.__distance_matrix) == self.__nb_cities)
+                              len(self.__distance_matrix) == self.__nb_cities and
+                              ((objectsTools.is_cartesian_coordinates_valid_structure(self.__cartesian_coordinates) and
+                                self.__cartesian_coordinates.shape[0] == self.__nb_cities)
+                               or self.__cartesian_coordinates is None))
         if is_valid_structure:
             i = 0
             while is_valid_structure and i < self.__nb_cities:
@@ -168,4 +176,3 @@ class OrderedPath(CandidateTSP):
                 else:
                     nb_duplicates += 1
             return nb_duplicates
-

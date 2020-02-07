@@ -38,16 +38,17 @@ public class Main {
             // Print solution to a .txt file
             String res = "";
             for (int k=0; k<successors.length; k++) {
-                res += sol.getIntVal(successors[k]) + "\t";
+                res += sol.getIntVal(successors[k]);
+                res += (k<successors.length-1) ? "\t" : "";
             }
-
             PrintWriter writer = new PrintWriter(
-                    String.format("dataSet_%d_%d.tsp", tsp.getNb_cities(), i), "UTF-8");
+                    String.format("dataSet_%d_%d.choco", tsp.getNb_cities(), i), "UTF-8");
             writer.println(i);
             writer.println(tsp.getNb_cities());
             writer.println(tsp.toString());
             writer.println(res);
             writer.println(sol.getIntVal(z));
+            for (int k=0; k<tsp.getNb_cities(); k++) writer.println(tsp.getPoints()[k]);
             writer.close();
         }
     }

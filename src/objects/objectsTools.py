@@ -53,3 +53,13 @@ def normalize_weight_matrix(weight_matrix):
     """
     highest_weight = get_highest_weight(weight_matrix)
     return weight_matrix / highest_weight
+
+
+def is_cartesian_coordinates_valid_structure(cartesian_coordinates):
+    """
+    The structure of the cartesian coordinates is valid if each element of the matrix (size n x n) is an integer
+    :param cartesian_coordinates: object pretending to be cartesian coordinates
+    :return: True if the structure of the cartesian coordinates is valid, False otherwise
+    """
+    return (type(cartesian_coordinates) == np.ndarray and cartesian_coordinates.dtype == int and
+            cartesian_coordinates.shape[1] == 2 and cartesian_coordinates.shape[0] > 0)
