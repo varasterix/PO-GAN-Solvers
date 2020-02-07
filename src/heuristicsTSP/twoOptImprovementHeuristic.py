@@ -47,7 +47,8 @@ def solve_with_two_opt_improvement_heuristic(initial_ordered_path, time_limit):
                     memory_total_weight = current_total_weight
                     memory_ordered_path_array = np.copy(current_o_p_array)
 
-            return oP.OrderedPath(memory_ordered_path_array, weight_matrix), memory_total_weight
+            return oP.OrderedPath(memory_ordered_path_array, weight_matrix,
+                                  initial_ordered_path.get_cartesian_coordinates()), memory_total_weight
 
 
 def two_opt_swap(ordered_path_array, i, j):
