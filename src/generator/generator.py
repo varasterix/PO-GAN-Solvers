@@ -9,9 +9,9 @@ class Generator(nn.Module):
     def __init__(self):
         super(Generator, self).__init__()
         self.fc1 = nn.Linear(100, 200)
-        self.fc2 = nn.Linear(200, 200)
-        self.fc3 = nn.Linear(200, 200)
-        self.fc4 = nn.Linear(200, 200)
+        self.fc2 = nn.Linear(200, 500)
+        self.fc3 = nn.Linear(500, 500)
+        self.fc4 = nn.Linear(500, 200)
         self.fc5 = nn.Linear(200, 100)
 
         params = self.parameters()
