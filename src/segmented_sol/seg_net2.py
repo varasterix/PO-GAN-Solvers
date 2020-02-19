@@ -8,7 +8,7 @@ class SegNet2(nn.Module):
     # the definition of the layers
     def __init__(self, nb_cities):
         super(SegNet2, self).__init__()
-        self.name = "SegNet"
+        self.name = "SegNet2"
         self.nb_cities = nb_cities
         square_nb_cities = nb_cities * nb_cities
 
