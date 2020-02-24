@@ -10,8 +10,8 @@ from src.utils import custom_formatwarning
 from src.database.databaseTools import read_tsp_heuristic_solution_file
 from src.objects.objectsTools import normalize_weight_matrix
 from src import constants
-from src.segmented_sol.seg_net import SegNet
-from src.segmented_sol.seg_net2 import SegNet2
+from src.segmented_net.seg_net import SegNet
+from src.segmented_net.seg_net2 import SegNet2
 
 
 def train(model, train_set, optimizer, database_path):
