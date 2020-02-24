@@ -149,7 +149,7 @@ def experiment(model, epochs, lr, train_set, valid_set, tsp_database_path):
 
 if __name__ == '__main__':
     # Parameters
-    tsp_heuristic_database_path = "../" + constants.PARAMETER_TSP_DATA_FILES
+    tsp_heuristic_database_path = "../../" + constants.PARAMETER_TSP_DATA_FILES
     number_cities = 10
     train_proportion = 0.8
     valid_proportion = 0.1
@@ -238,5 +238,5 @@ if __name__ == '__main__':
     ax1.set_position([box.x0, box.y0 + box.height * 0.15, box.width, box.height * 0.85])
     ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=nb_results)
 
-    plt.savefig("../" + constants.PARAMETER_FIGURE_RESULTS_PATH + "structureLearning" + models_name)
+    plt.savefig("../../" + constants.PARAMETER_FIGURE_RESULTS_PATH + "structureLearning" + models_name)
     plt.show()
