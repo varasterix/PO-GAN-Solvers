@@ -1,16 +1,14 @@
 import torch
 import torch.nn as nn
-import torch.optim as optim
 import torch.nn.functional as F
-import torchvision.transforms as T
 
-# if gpu is to be used
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+p = 0.6  # dropout
 
 
 class DQN(nn.module):
 
-    def __init__(self, h, w, outputs):
+    def __init__(self, weight_matrix):
         super(DQN, self).__init__()
         self.fc1 = nn.Linear(100, 200)
         self.bn1 = nn.BatchNorm1d(200)
@@ -20,7 +18,11 @@ class DQN(nn.module):
         self.bn3 = nn.BatchNorm1d(10)
 
     def forward(self, x):
-        x = F.relu(self.bn1(self.conv1(x)))
-        x = F.relu(self.bn2(self.conv2(x)))
-        x = F.relu(self.bn3(self.conv3(x)))
-        return x
+        model = torch.nn.Sequential(self.fc1, self.bn1, F.dropout(p), F.relu(),
+                                    self.fc2, self.bn2, F.dropout(p), F.relu(),
+                                    self.fc3, self.bn3, F.dropout(p), F.relu())
+        return model(x)
+        # x = F.relu(self.bn1(self.fc1(x)))
+        # x = F.relu(self.bn2(self.fc2(x)))
+        # x = F.relu(self.bn3(self.fc3(x)))
+        # return x
