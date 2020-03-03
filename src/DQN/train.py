@@ -30,11 +30,11 @@ for i in range(N_INSTANCES):
 # Get number of actions from gym action space
 # n_actions = env.action_space.n
 n_actions = N_INSTANCES  # not sure about that...
-n_cities = dataset[0].get_weight_matrix[0].size()  # number of cities
-wm_size = dataset[0].get_weight_matrix.reshape(n_cities**2)  # weight matrix as a n_cities * n_cities input
+n_cities = N_CITIES  # number of cities
+wm = dataset[0].get_weight_matrix.reshape(n_cities ** 2)  # weight matrix as a n_cities * n_cities input
 
-policy_net = DQN(wm_size).to(device)
-target_net = DQN(wm_size).to(device)
+policy_net = DQN(wm).to(device)
+target_net = DQN(wm).to(device)
 target_net.load_state_dict(policy_net.state_dict())
 target_net.eval()
 
