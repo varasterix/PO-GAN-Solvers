@@ -4,6 +4,9 @@ import torch.optim as optim
 import torch.nn.functional as F
 import torchvision.transforms as T
 
+# if gpu is to be used
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 
 class DQN(nn.module):
 
