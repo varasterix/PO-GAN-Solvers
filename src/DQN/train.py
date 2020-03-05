@@ -9,7 +9,6 @@ from src import constants
 from src.DQN.dqn import *
 from src.DQN.replay_memory import ReplayMemory, Transition
 
-
 N_INSTANCES = 10000
 N_CITIES = 10
 BATCH_SIZE = 200
@@ -25,15 +24,14 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 epochs = 2000
 dataset = []
 for i in range(N_INSTANCES):
-    dataset.append(databaseTools.read_tsp_choco_solution_file(N_CITIES, i,
-                                                              path="../../" + constants.PARAMETER_TSP_CHOCO_DATA_FILES))
+    dataset.append(databaseTools.read_tsp_choco_solution_file(
+        N_CITIES, i, path="../../" + constants.PARAMETER_TSP_CHOCO_DATA_FILES))
 
 # Get number of actions from gym action space
 # n_actions = env.action_space.n
 n_actions = N_INSTANCES  # not sure about that...
 n_cities = N_CITIES  # number of cities
 dm = dataset[0].get_weight_matrix.reshape(n_cities ** 2)  # distance matrix as a n_cities * n_cities input
-
 
 policy_net = DQN(dm).to(device)
 target_net = DQN(dm).to(device)
