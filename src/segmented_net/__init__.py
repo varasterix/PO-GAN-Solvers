@@ -1,1 +1,1 @@
-from src.segmented_net import exe_segmented_learning, seg_net, seg_net2
+from src.segmented_net import segmentedLearning, seg_net, seg_net2
