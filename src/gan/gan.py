@@ -8,7 +8,7 @@ from src.database import databaseTools
 import random
 from src.objects.orderedPath import OrderedPath
 
-NB_ITERATION_MAX = 3000
+NB_ITERATION_MAX = 1500
 GEN_LOSS_GAIN_TO_SWITCH = 0.995
 DISC_LOSS_GAIN_TO_SWITCH = 0.99
 
@@ -23,7 +23,7 @@ if __name__ == '__main__':
     generator = Generator()
     discriminator = Discriminator()
 
-    epochs = 100
+    epochs = 2000
     dataset = []
     for i in range(2000):
         dataset.append(databaseTools.read_tsp_choco_solution_file(10, i, path="../../" +
