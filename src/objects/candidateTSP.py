@@ -1,7 +1,7 @@
 from src.objects.candidateCSP import CandidateCSP
 
 
-class CandidateTSP(CandidateCSP):  # TODO : abus de langage "distance matrix" -> "weight matrix"
+class CandidateTSP(CandidateCSP):
     """
     Abstract class specifying an interface of a candidate of an instance of the Travelling Salesman Problem (TSP)
     """
