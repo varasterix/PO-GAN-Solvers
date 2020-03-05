@@ -1,9 +1,10 @@
+import numpy as np
+import matplotlib.pyplot as plt
 from src.objects.candidateTSP import CandidateTSP
 from src.objects import objectsTools
 import src.objects.neighboursBinaryMatrix as nBM
 import src.objects.neighbours as n
 import src.objects.orderedPathBinaryMatrix as oPBM
-import numpy as np
 
 
 class OrderedPath(CandidateTSP):
@@ -98,8 +99,9 @@ class OrderedPath(CandidateTSP):
         if not self.is_solution():
             raise Exception('The candidate is not a solution of the TSP')
         else:
-            return sum([self.__distance_matrix[self.__ordered_path[i], self.__ordered_path[(i + 1) % self.__nb_cities]]
-                        for i in range(self.__nb_cities)])
+            return int(
+                sum([self.__distance_matrix[self.__ordered_path[i], self.__ordered_path[(i + 1) % self.__nb_cities]]
+                     for i in range(self.__nb_cities)]))
 
     def to_neighbours(self):
         """
@@ -164,7 +166,7 @@ class OrderedPath(CandidateTSP):
         return is_valid_structure
 
     def get_nb_duplicates(self):
-        done = [0]*self.__nb_cities
+        done = [0] * self.__nb_cities
         nb_duplicates = 0
         if not self.is_valid_structure():
             raise Exception('The candidate has not a valid structure')
@@ -176,3 +178,24 @@ class OrderedPath(CandidateTSP):
                 else:
                     nb_duplicates += 1
             return nb_duplicates
+
+    def plot(self):
+        if not self.is_valid_structure():
+            raise Exception('The candidate has not a valid structure')
+        elif self.get_cartesian_coordinates() is None:
+            raise Exception('There are no cartesian coordinates for this object')
+        else:
+            label = "Not a TSP solution" if not self.is_solution() else "Solution, D=" + str(self.distance())
+            plt.figure("TSP candidate figure")
+            plt.title("TSP candidate - Representation of the cycle")
+            for x, y in self.get_cartesian_coordinates():
+                plt.plot(x, y, "ok")
+            x_seq, y_seq = [], []
+            for city in self.get_candidate():
+                x_seq.append(self.get_cartesian_coordinates()[city, 0])
+                y_seq.append(self.get_cartesian_coordinates()[city, 1])
+            x_seq.append(self.get_cartesian_coordinates()[self.get_candidate()[0], 0])
+            y_seq.append(self.get_cartesian_coordinates()[self.get_candidate()[0], 1])
+            plt.plot(x_seq, y_seq, '-b', label=label)
+            plt.legend()
+            plt.show()

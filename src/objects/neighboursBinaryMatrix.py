@@ -1,9 +1,10 @@
+import numpy as np
+import matplotlib.pyplot as plt
 from src.objects.candidateTSP import CandidateTSP
 from src.objects import objectsTools
 import src.objects.neighbours as n
 import src.objects.orderedPath as oP
 import src.objects.orderedPathBinaryMatrix as oPBM
-import numpy as np
 
 
 class NeighboursBinaryMatrix(CandidateTSP):
@@ -95,8 +96,9 @@ class NeighboursBinaryMatrix(CandidateTSP):
         if not self.is_solution():
             raise Exception('The candidate is not a solution of the TSP')
         else:
-            return sum([self.__distance_matrix[i, neighbour_i] for i, neighbour_i in
-                        enumerate([np.where(self.__binary_matrix[:, j] == 1)[0][0] for j in range(self.__nb_cities)])])
+            return int(sum([self.__distance_matrix[i, neighbour_i] for i, neighbour_i in
+                            enumerate([np.where(self.__binary_matrix[:, j] == 1)[0][0]
+                                       for j in range(self.__nb_cities)])]))
 
     def to_neighbours(self):
         """
@@ -187,5 +189,28 @@ class NeighboursBinaryMatrix(CandidateTSP):
                         visited[j] += 1
                         j = np.where(self.__binary_matrix[:, j] == 1)[0][0]  # it gets the neighbor of the city j
                     # if j != first_index:
-                        # return 0
+                    # return 0
             return nb_cycles
+
+    def plot(self):
+        if not self.is_valid_structure():
+            raise Exception('The candidate has not a valid structure')
+        elif self.get_cartesian_coordinates() is None:
+            raise Exception('There are no cartesian coordinates for this object')
+        else:
+            label = "Not a TSP solution" if not self.is_solution() else "Solution, D=" + str(self.distance())
+            plt.figure("TSP candidate figure")
+            plt.title("TSP candidate - Representation of the cycle")
+            for x, y in self.get_cartesian_coordinates():
+                plt.plot(x, y, "ok")
+            for city_i in range(self.get_nb_cities()):
+                x_seq = [self.get_cartesian_coordinates()[city_i, 0],
+                         self.get_cartesian_coordinates()[np.where(self.__binary_matrix[:, city_i] == 1)[0][0], 0]]
+                y_seq = [self.get_cartesian_coordinates()[city_i, 1],
+                         self.get_cartesian_coordinates()[np.where(self.__binary_matrix[:, city_i] == 1)[0][0], 1]]
+                if city_i == 0:
+                    plt.plot(x_seq, y_seq, '-b', label=label)
+                else:
+                    plt.plot(x_seq, y_seq, '-b')
+            plt.legend()
+            plt.show()
