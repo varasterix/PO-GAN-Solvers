@@ -6,8 +6,9 @@ import random
 
 from src.database import databaseTools
 from src import constants
-from src.DQN.dqn import DQN
+from src.DQN.dqn import *
 from src.DQN.replay_memory import ReplayMemory, Transition
+
 
 N_INSTANCES = 10000
 N_CITIES = 10
@@ -21,7 +22,7 @@ TARGET_UPDATE = 10
 # if gpu is to be used
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# epochs = 2000
+epochs = 2000
 dataset = []
 for i in range(N_INSTANCES):
     dataset.append(databaseTools.read_tsp_choco_solution_file(N_CITIES, i,
@@ -31,10 +32,11 @@ for i in range(N_INSTANCES):
 # n_actions = env.action_space.n
 n_actions = N_INSTANCES  # not sure about that...
 n_cities = N_CITIES  # number of cities
-wm = dataset[0].get_weight_matrix.reshape(n_cities ** 2)  # weight matrix as a n_cities * n_cities input
+dm = dataset[0].get_weight_matrix.reshape(n_cities ** 2)  # distance matrix as a n_cities * n_cities input
 
-policy_net = DQN(wm).to(device)
-target_net = DQN(wm).to(device)
+
+policy_net = DQN(dm).to(device)
+target_net = DQN(dm).to(device)
 target_net.load_state_dict(policy_net.state_dict())
 target_net.eval()
 
@@ -105,28 +107,23 @@ def optimize_model():
 
 
 num_episodes = 50
+
 for i_episode in range(num_episodes):
+
     # Initialize the environment and state
-
-    # TO DO:
-    # Modeling the environment and defining the states and how to change state
-
-    """
-    env.reset()
-    last_screen = get_screen()
-    current_screen = get_screen()
-    state = current_screen - last_screen
-    for t in count():
+    env = Environment(dm)
+    visited = [1] + [0 for i in range(N_CITIES - 1)]
+    state = env.get_visited_cities() + dm
+    for t in range(epochs):
         # Select and perform an action
         action = select_action(state)
-        _, reward, done, _ = env.step(action.item())
+        reward, done = env.step(action.item())
         reward = torch.tensor([reward], device=device)
 
         # Observe new state
-        last_screen = current_screen
-        current_screen = get_screen()
         if not done:
-            next_state = current_screen - last_screen
+            env.set_next_city(action)
+            next_state = env.get_visited_cities() + dm
         else:
             next_state = None
 
@@ -140,13 +137,9 @@ for i_episode in range(num_episodes):
         optimize_model()
         if done:
             episode_durations.append(t + 1)
-            # plot_durations()
             break
     # Update the target network, copying all weights and biases in DQN
     if i_episode % TARGET_UPDATE == 0:
         target_net.load_state_dict(policy_net.state_dict())
 
 print('Complete')
-env.render()
-env.close()
-"""
