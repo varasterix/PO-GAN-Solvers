@@ -1,9 +1,10 @@
+import numpy as np
+import matplotlib.pyplot as plt
 from src.objects.candidateTSP import CandidateTSP
 from src.objects import objectsTools
 import src.objects.neighboursBinaryMatrix as nBM
 import src.objects.orderedPath as oP
 import src.objects.orderedPathBinaryMatrix as oPBM
-import numpy as np
 
 
 class Neighbours(CandidateTSP):
@@ -94,7 +95,8 @@ class Neighbours(CandidateTSP):
         if not self.is_solution():
             raise Exception('The candidate is not a solution of the TSP')
         else:
-            return sum([self.__distance_matrix[i, neighbor_i] for i, neighbor_i in enumerate(self.__neighbours_array)])
+            return int(sum([self.__distance_matrix[i, neighbor_i]
+                            for i, neighbor_i in enumerate(self.__neighbours_array)]))
 
     def to_neighbours_binary_matrix(self):
         """
@@ -186,3 +188,26 @@ class Neighbours(CandidateTSP):
                     # if j != first_index:
                         # return 0
             return nb_cycles
+
+    def plot(self):
+        if not self.is_valid_structure():
+            raise Exception('The candidate has not a valid structure')
+        elif self.get_cartesian_coordinates() is None:
+            raise Exception('There are no cartesian coordinates for this object')
+        else:
+            label = "Not a TSP solution" if not self.is_solution() else "Solution, D=" + str(self.distance())
+            plt.figure("TSP candidate figure")
+            plt.title("TSP candidate - Representation of the cycle")
+            for x, y in self.get_cartesian_coordinates():
+                plt.plot(x, y, "ok")
+            for city_i in range(self.get_nb_cities()):
+                x_seq = [self.get_cartesian_coordinates()[city_i, 0],
+                         self.get_cartesian_coordinates()[self.__neighbours_array[city_i], 0]]
+                y_seq = [self.get_cartesian_coordinates()[city_i, 1],
+                         self.get_cartesian_coordinates()[self.__neighbours_array[city_i], 1]]
+                if city_i == 0:
+                    plt.plot(x_seq, y_seq, '-b', label=label)
+                else:
+                    plt.plot(x_seq, y_seq, '-b')
+            plt.legend()
+            plt.show()
