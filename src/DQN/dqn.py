@@ -1,26 +1,61 @@
 import torch
 import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
-import torchvision.transforms as T
 
-# if gpu is to be used
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+# import torch.nn.functional as F
+
+p = 0.9  # dropout
 
 
 class DQN(nn.module):
 
-    def __init__(self, h, w, outputs):
+    def __init__(self, distance_matrix):
         super(DQN, self).__init__()
-        self.fc1 = nn.Linear(100, 200)
-        self.bn1 = nn.BatchNorm1d(200)
-        self.fc2 = nn.Linear(200, 200)
-        self.bn2 = nn.BatchNorm1d(200)
-        self.fc3 = nn.Linear(200, 10)
-        self.bn3 = nn.BatchNorm1d(10)
+        matrix_length = len(distance_matrix)
+        matrix_size = matrix_length ** 2
+        self.fc1 = nn.Linear(matrix_size + matrix_length, 2 * matrix_size)
+        self.bn1 = nn.BatchNorm1d(2 * matrix_size)
+        self.fc2 = nn.Linear(2 * matrix_size, 2 * matrix_size)
+        self.bn2 = nn.BatchNorm1d(2 * matrix_size)
+        self.fc3 = nn.Linear(2 * matrix_size, matrix_length)
+        self.bn3 = nn.BatchNorm1d(matrix_length)
 
     def forward(self, x):
-        x = F.relu(self.bn1(self.conv1(x)))
-        x = F.relu(self.bn2(self.conv2(x)))
-        x = F.relu(self.bn3(self.conv3(x)))
-        return x
+        model = torch.nn.Sequential(self.fc1, self.bn1, nn.Dropout(p), nn.ReLU(),
+                                    self.fc2, self.bn2, nn.Dropout(p), nn.ReLU(),
+                                    self.fc3, self.bn3, nn.Dropout(p), nn.ReLU())
+        return model(x)
+
+
+class Environment:
+
+    def __init__(self, distance_matrix):
+        self.__nb_cities = len(distance_matrix)
+        self.__distance_matrix = distance_matrix
+        self.__current_city = 0
+        self.__visited_cities = [1] + [0 for i in range(self.__nb_cities - 1)]
+
+    def get_nb_cities(self):
+        return self.__nb_cities
+
+    def get_distance_matrix(self):
+        return self.__distance_matrix
+
+    def get_visited_cities(self):
+        return self.__visited_cities
+
+    def get_current_city(self):
+        return self.__current_city
+
+    def set_next_city(self, city):
+        self.__visited_cities.append(city)
+
+    def step(self, action):
+        done = False
+        if self.get_visited_cities().__contains__(action):
+            reward = -1
+        else:
+            reward = 1 / self.get_distance_matrix()[self.get_visited_cities()[-1]][action]
+        self.set_next_city(action)
+        if len(self.get_visited_cities()) == self.get_nb_cities():
+            done = True
+        return reward, done
