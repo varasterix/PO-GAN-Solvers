@@ -9,9 +9,9 @@ from src import constants
 from src.DQN.dqn import DQN
 from src.DQN.replay_memory import ReplayMemory, Transition
 
-N_INSTANCES = 2000
+N_INSTANCES = 10000
 N_CITIES = 10
-BATCH_SIZE = 128
+BATCH_SIZE = 200
 GAMMA = 0.999
 EPS_START = 0.9
 EPS_END = 0.05
@@ -48,7 +48,7 @@ def select_action(state):
     global steps_done
     sample = random.random()
     eps_threshold = EPS_END + (EPS_START - EPS_END) * \
-        math.exp(-1. * steps_done / EPS_DECAY)
+                    math.exp(-1. * steps_done / EPS_DECAY)
     steps_done += 1
     if sample > eps_threshold:
         with torch.no_grad():
