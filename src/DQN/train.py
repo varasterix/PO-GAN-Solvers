@@ -112,10 +112,7 @@ for i_episode in range(num_episodes):
     # Initialize the environment and state
     env = Environment(dm, NB_CITIES)
     visited = [1] + [0 for i in range(NB_CITIES - 1)]
-    print(env.get_visited_cities())
-    print(dm)
     state = np.concatenate((env.get_visited_cities(), dm))
-    print(state)
     for t in range(epochs):
         # Select and perform an action
         action = select_action(state)
