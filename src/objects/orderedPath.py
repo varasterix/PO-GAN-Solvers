@@ -61,7 +61,8 @@ class OrderedPath(CandidateTSP):
                 return is_ordered_path_equal and is_distance_matrix_equal
 
     def __copy__(self):
-        return OrderedPath(np.copy(self.__ordered_path), np.copy(self.__distance_matrix))
+        return OrderedPath(np.copy(self.__ordered_path), np.copy(self.__distance_matrix),
+                           np.copy(self.__cartesian_coordinates))
 
     def get_nb_cities(self):
         return self.__nb_cities

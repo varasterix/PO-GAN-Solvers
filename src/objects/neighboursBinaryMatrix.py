@@ -55,7 +55,8 @@ class NeighboursBinaryMatrix(CandidateTSP):
                 return is_neighbours_binary_matrix_equal and is_distance_matrix_equal
 
     def __copy__(self):
-        return NeighboursBinaryMatrix(np.copy(self.__binary_matrix), np.copy(self.__distance_matrix))
+        return NeighboursBinaryMatrix(np.copy(self.__binary_matrix), np.copy(self.__distance_matrix),
+                                      np.copy(self.__cartesian_coordinates))
 
     def get_nb_cities(self):
         return self.__nb_cities
