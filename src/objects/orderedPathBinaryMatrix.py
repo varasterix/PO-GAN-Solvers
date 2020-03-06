@@ -190,11 +190,13 @@ class OrderedPathBinaryMatrix(CandidateTSP):
         elif self.get_cartesian_coordinates() is None:
             raise Exception('There are no cartesian coordinates for this object')
         else:
+            annotation_gap = 10
             label = "Not a TSP solution" if not self.is_solution() else "Solution, D=" + str(self.distance())
             plt.figure("TSP candidate figure")
             plt.title("TSP candidate - Representation of the cycle")
-            for x, y in self.get_cartesian_coordinates():
+            for i, (x, y) in enumerate(self.get_cartesian_coordinates()):
                 plt.plot(x, y, "ok")
+                plt.annotate(i, (x + annotation_gap, y + annotation_gap))
             x_seq, y_seq = [], []
             for i in range(self.get_nb_cities()):
                 city = np.where(self.__binary_matrix[:, i] == 1)[0][0]
