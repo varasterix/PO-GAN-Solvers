@@ -3,14 +3,15 @@ import torch.optim as optim
 import torch.nn.functional as F
 import math
 import random
+import numpy as np
 
 from src.database import databaseTools
 from src import constants
 from src.DQN.dqn import *
 from src.DQN.replay_memory import ReplayMemory, Transition
 
-N_INSTANCES = 10000
-N_CITIES = 10
+NB_INSTANCES = 10000
+NB_CITIES = 10
 BATCH_SIZE = 200
 GAMMA = 0.999
 EPS_START = 0.9
@@ -23,18 +24,18 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 epochs = 2000
 dataset = []
-for i in range(N_INSTANCES):
+for i in range(NB_INSTANCES):
     dataset.append(databaseTools.read_tsp_choco_solution_file(
-        N_CITIES, i, path="../../" + constants.PARAMETER_TSP_CHOCO_DATA_FILES))
+        NB_CITIES, i, path="../../" + constants.PARAMETER_TSP_CHOCO_DATA_FILES))
 
 # Get number of actions from gym action space
 # n_actions = env.action_space.n
-n_actions = N_INSTANCES  # not sure about that...
-n_cities = N_CITIES  # number of cities
-dm = dataset[0].get_weight_matrix.reshape(n_cities ** 2)  # distance matrix as a n_cities * n_cities input
+n_actions = NB_CITIES  # not sure about that...
+n_cities = NB_CITIES  # number of cities
+dm = dataset[0][0].get_weight_matrix().reshape(n_cities ** 2)  # distance matrix as a n_cities * n_cities input
 
-policy_net = DQN(dm).to(device)
-target_net = DQN(dm).to(device)
+policy_net = DQN(dm, NB_CITIES).to(device)
+target_net = DQN(dm, NB_CITIES).to(device)
 target_net.load_state_dict(policy_net.state_dict())
 target_net.eval()
 
@@ -109,9 +110,9 @@ num_episodes = 50
 for i_episode in range(num_episodes):
 
     # Initialize the environment and state
-    env = Environment(dm)
-    visited = [1] + [0 for i in range(N_CITIES - 1)]
-    state = env.get_visited_cities() + dm
+    env = Environment(dm, NB_CITIES)
+    visited = [1] + [0 for i in range(NB_CITIES - 1)]
+    state = np.concatenate((env.get_visited_cities(), dm))
     for t in range(epochs):
         # Select and perform an action
         action = select_action(state)
