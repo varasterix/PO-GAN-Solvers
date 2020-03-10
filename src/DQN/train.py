@@ -20,7 +20,7 @@ EPS_DECAY = 200
 TARGET_UPDATE = 10
 
 # if gpu is to be used
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")  # "cuda" if torch.cuda.is_available() else "cpu")
 
 epochs = 2000
 dataset = []
@@ -56,7 +56,7 @@ def select_action(state):
             # t.max(1) will return largest column value of each row.
             # second column on max result is index of where max element was found,
             # so we pick action with the larger expected reward.
-            return policy_net(state.float().reshape(1, 110)).argmax()
+            return policy_net(state.float().reshape(1, 110)).argmax().to(device)
     else:
         return torch.tensor([[random.randrange(n_actions)]], device=device, dtype=torch.long)
 
