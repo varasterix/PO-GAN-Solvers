@@ -58,7 +58,6 @@ class Environment:
             reward = -1
         else:
             reward = 1 / self.get_distance_matrix()[self.get_current_city() * self.get_nb_cities() + action]
-        self.set_next_city(action)
         if sum(self.get_visited_cities()) == self.get_nb_cities():
             done = True
         return reward, done
