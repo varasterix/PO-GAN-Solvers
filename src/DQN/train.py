@@ -48,14 +48,15 @@ steps_done = 0
 def select_action(state):
     global steps_done
     sample = random.random()
-    eps_threshold = EPS_END + (EPS_START - EPS_END) * math.exp(-1. * steps_done / EPS_DECAY)
+    # eps_threshold = EPS_END + (EPS_START - EPS_END) * math.exp(-1. * steps_done / EPS_DECAY)
+    eps_threshold = 0
     steps_done += 1
     if sample > eps_threshold:
         with torch.no_grad():
             # t.max(1) will return largest column value of each row.
             # second column on max result is index of where max element was found,
             # so we pick action with the larger expected reward.
-            return policy_net(state).max(1)[1].view(1, 1)
+            return policy_net(state.float().reshape(1, 110)).argmax()
     else:
         return torch.tensor([[random.randrange(n_actions)]], device=device, dtype=torch.long)
 
@@ -111,8 +112,8 @@ for i_episode in range(num_episodes):
 
     # Initialize the environment and state
     env = Environment(dm, NB_CITIES)
-    visited = [1] + [0 for i in range(NB_CITIES - 1)]
-    state = np.concatenate((env.get_visited_cities(), dm))
+    visited = env.get_visited_cities()
+    state = torch.tensor(np.concatenate((env.get_visited_cities(), dm)), dtype=torch.float, requires_grad=True)
     for t in range(epochs):
         # Select and perform an action
         action = select_action(state)
@@ -122,7 +123,7 @@ for i_episode in range(num_episodes):
         # Observe new state
         if not done:
             env.set_next_city(action)
-            next_state = env.get_visited_cities() + dm
+            next_state = torch.from_numpy(np.concatenate((env.get_visited_cities(), dm)))
         else:
             next_state = None
 
