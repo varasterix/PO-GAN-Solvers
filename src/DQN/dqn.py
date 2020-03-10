@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
-
-# import torch.nn.functional as F
+import torch.nn.functional as F
 
 p = 0.9  # dropout
 
@@ -22,9 +21,6 @@ class DQN(nn.Module):
         model = torch.nn.Sequential(self.fc1, nn.Dropout(p), nn.ReLU(),
                                     self.fc2, nn.Dropout(p), nn.ReLU(),
                                     self.fc3, nn.Dropout(p), nn.ReLU())
-        # model = torch.nn.Sequential(self.fc1, self.bn1, nn.Dropout(p), nn.ReLU(),
-        #                             self.fc2, self.bn2, nn.Dropout(p), nn.ReLU(),
-        #                             self.fc3, self.bn3, nn.Dropout(p), nn.ReLU())
         return model(x)
 
 
