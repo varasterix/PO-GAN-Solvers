@@ -19,9 +19,12 @@ class DQN(nn.Module):
         self.bn3 = nn.BatchNorm1d(nb_cities)
 
     def forward(self, x):
-        model = torch.nn.Sequential(self.fc1, self.bn1, nn.Dropout(p), nn.ReLU(),
-                                    self.fc2, self.bn2, nn.Dropout(p), nn.ReLU(),
-                                    self.fc3, self.bn3, nn.Dropout(p), nn.ReLU())
+        model = torch.nn.Sequential(self.fc1, nn.Dropout(p), nn.ReLU(),
+                                    self.fc2, nn.Dropout(p), nn.ReLU(),
+                                    self.fc3, nn.Dropout(p), nn.ReLU())
+        # model = torch.nn.Sequential(self.fc1, self.bn1, nn.Dropout(p), nn.ReLU(),
+        #                             self.fc2, self.bn2, nn.Dropout(p), nn.ReLU(),
+        #                             self.fc3, self.bn3, nn.Dropout(p), nn.ReLU())
         return model(x)
         # x = F.relu(self.bn1(self.fc1(x)))
         # x = F.relu(self.bn2(self.fc2(x)))
@@ -35,7 +38,7 @@ class Environment:
         self.__nb_cities = nb_cities
         self.__distance_matrix = distance_matrix
         self.__current_city = 0
-        self.__visited_cities = [1] + [0 for i in range(self.__nb_cities - 1)]
+        self.__visited_cities = [1.] + [0. for i in range(self.__nb_cities - 1)]
 
     def get_nb_cities(self):
         return self.__nb_cities
@@ -50,15 +53,16 @@ class Environment:
         return self.__current_city
 
     def set_next_city(self, city):
-        self.__visited_cities[city] = 1
+        self.__visited_cities[city] += 1.
+        self.__current_city = city
 
     def step(self, action):
         done = False
-        if self.get_visited_cities().__contains__(action):
+        if self.get_visited_cities()[action] >= 1.:
             reward = -1
         else:
-            reward = 1 / self.get_distance_matrix()[self.get_visited_cities()[-1] * self.get_nb_cities() + action]
+            reward = 1 / self.get_distance_matrix()[self.get_current_city() * self.get_nb_cities() + action]
         self.set_next_city(action)
-        if len(self.get_visited_cities()) == self.get_nb_cities():
+        if sum(self.get_visited_cities()) == self.get_nb_cities():
             done = True
         return reward, done
