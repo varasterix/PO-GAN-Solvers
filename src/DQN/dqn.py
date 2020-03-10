@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-# import torch.nn.functional as F
+import torch.nn.functional as F
 
 p = 0.9  # dropout
 
@@ -23,6 +23,10 @@ class DQN(nn.Module):
                                     self.fc2, self.bn2, nn.Dropout(p), nn.ReLU(),
                                     self.fc3, self.bn3, nn.Dropout(p), nn.ReLU())
         return model(x)
+        # x = F.relu(self.bn1(self.fc1(x)))
+        # x = F.relu(self.bn2(self.fc2(x)))
+        # x = F.relu(self.bn3(self.fc3(x)))
+        # return x
 
 
 class Environment:

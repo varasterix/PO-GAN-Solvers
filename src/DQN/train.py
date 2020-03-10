@@ -20,7 +20,7 @@ EPS_DECAY = 200
 TARGET_UPDATE = 10
 
 # if gpu is to be used
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")  # "cuda" if torch.cuda.is_available() else "cpu")
 
 epochs = 2000
 dataset = []
@@ -33,7 +33,7 @@ for i in range(NB_INSTANCES):
 n_actions = NB_CITIES  # not sure about that...
 n_cities = NB_CITIES  # number of cities
 dm = dataset[0][0].get_weight_matrix().reshape(n_cities ** 2)  # distance matrix as a n_cities * n_cities input
-
+# dm = torch.tensor(dm, dtype=torch.int)
 policy_net = DQN(dm, NB_CITIES).to(device)
 target_net = DQN(dm, NB_CITIES).to(device)
 target_net.load_state_dict(policy_net.state_dict())
@@ -112,7 +112,7 @@ for i_episode in range(num_episodes):
     # Initialize the environment and state
     env = Environment(dm, NB_CITIES)
     visited = [1] + [0 for i in range(NB_CITIES - 1)]
-    state = np.concatenate((env.get_visited_cities(), dm))
+    state = torch.from_numpy(np.concatenate((env.get_visited_cities(), dm)))
     for t in range(epochs):
         # Select and perform an action
         action = select_action(state)
@@ -122,7 +122,7 @@ for i_episode in range(num_episodes):
         # Observe new state
         if not done:
             env.set_next_city(action)
-            next_state = env.get_visited_cities() + dm
+            next_state = torch.from_numpy(np.concatenate((env.get_visited_cities(), dm)))
         else:
             next_state = None
 
