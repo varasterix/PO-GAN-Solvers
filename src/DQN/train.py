@@ -56,7 +56,7 @@ def select_action(state):
             # t.max(1) will return largest column value of each row.
             # second column on max result is index of where max element was found,
             # so we pick action with the larger expected reward.
-            return policy_net(state.float().reshape(1, 110)).argmax()
+            return torch.tensor([[policy_net(state.float().reshape(1, 110)).argmax()]], device=device, dtype=torch.long)
     else:
         return torch.tensor([[random.randrange(n_actions)]], device=device, dtype=torch.long)
 
@@ -118,7 +118,7 @@ for i_episode in range(num_episodes):
         # Select and perform an action
         action = select_action(state)
         reward, done = env.step(action.item())
-        reward = torch.tensor([reward], device=device)
+        reward = torch.tensor([[reward]], device=device, dtype=torch.long)
 
         # Observe new state
         if not done:
