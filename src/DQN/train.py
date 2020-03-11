@@ -56,8 +56,7 @@ def select_action(state):
             # t.max(1) will return largest column value of each row.
             # second column on max result is index of where max element was found,
             # so we pick action with the larger expected reward.
-            return torch.tensor([[policy_net(state.float().reshape(1, nb_cities * (nb_cities + 1))).argmax()]],
-                                device=device, dtype=torch.long)
+            return torch.tensor([[policy_net(state.float().reshape(1, nb_cities * (nb_cities + 1))).argmax()]], device=device, dtype=torch.long)
     else:
         return torch.tensor([[random.randrange(nb_actions)]], device=device, dtype=torch.long)
 
@@ -77,10 +76,8 @@ def optimize_model():
     # (a final state would've been the one after which simulation ended)
     non_final_mask = torch.tensor(tuple(map(lambda s: s is not None, batch.next_state)),
                                   device=device, dtype=torch.bool)
-    non_final_next_states = torch.cat([s for s in batch.next_state if s is not None]).reshape(-1, 110).float()
-    state_batch = torch.cat([s.float() for s in batch.state]).reshape(200, 110)
     non_final_next_states = torch.cat([s for s in batch.next_state if s is not None])
-    state_batch = torch.cat([s.float() for s in batch.state]).reshape(200, 110)
+    state_batch = torch.cat([s.float() for s in batch.state])
     # TODO: find out what to feed the network with
     action_batch = torch.cat([s for s in batch.action])
     reward_batch = torch.cat(batch.reward)
