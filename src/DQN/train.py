@@ -20,7 +20,7 @@ EPS_DECAY = 200
 TARGET_UPDATE = 10
 
 # if gpu is to be used
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = torch.device("cpu")  # "cuda" if torch.cuda.is_available() else "cpu")
 
 epochs = 2000
 dataset = []
@@ -30,9 +30,9 @@ for i in range(NB_INSTANCES):
 
 # Get number of actions from gym action space
 # n_actions = env.action_space.n
-n_actions = NB_CITIES  # not sure about that...
-n_cities = NB_CITIES  # number of cities
-dm = dataset[0][0].get_weight_matrix().reshape(n_cities ** 2)  # distance matrix as a n_cities * n_cities input
+nb_actions = NB_CITIES  # not sure about that...
+nb_cities = NB_CITIES  # number of cities
+dm = dataset[0][0].get_weight_matrix().reshape(nb_cities ** 2)  # distance matrix as a n_cities * n_cities input
 
 policy_net = DQN(dm, NB_CITIES).to(device)
 target_net = DQN(dm, NB_CITIES).to(device)
@@ -56,9 +56,9 @@ def select_action(state):
             # t.max(1) will return largest column value of each row.
             # second column on max result is index of where max element was found,
             # so we pick action with the larger expected reward.
-            return torch.tensor([[policy_net(state.float().reshape(1, 110)).argmax()]], device=device, dtype=torch.long)
+            return torch.tensor([[policy_net(state.float().reshape(1, nb_cities * (nb_cities + 1))).argmax()]], device=device, dtype=torch.long)
     else:
-        return torch.tensor([[random.randrange(n_actions)]], device=device, dtype=torch.long)
+        return torch.tensor([[random.randrange(nb_actions)]], device=device, dtype=torch.long)
 
 
 episode_durations = []
@@ -78,6 +78,7 @@ def optimize_model():
                                   device=device, dtype=torch.bool)
     non_final_next_states = torch.cat([s for s in batch.next_state if s is not None])
     state_batch = torch.cat([s.float() for s in batch.state])
+    # TODO: find out what to feed the network with
     action_batch = torch.cat([s for s in batch.action])
     reward_batch = torch.cat(batch.reward)
 
