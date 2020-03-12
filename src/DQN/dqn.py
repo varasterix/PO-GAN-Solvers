@@ -31,6 +31,7 @@ class Environment:
         self.__distance_matrix = distance_matrix
         self.__current_city = 0
         self.__visited_cities = [1.] + [0. for i in range(self.__nb_cities - 1)]
+        self._ordered_cities = []
 
     def get_nb_cities(self):
         return self.__nb_cities
@@ -41,12 +42,16 @@ class Environment:
     def get_visited_cities(self):
         return self.__visited_cities
 
+    def get_ordered_cities(self):
+        return self._ordered_cities
+
     def get_current_city(self):
         return self.__current_city
 
     def set_next_city(self, city):
         self.__visited_cities[city] += 1.
         self.__current_city = city
+        self._ordered_cities.append(city)
 
     def step(self, action):
         done = False
