@@ -7,8 +7,8 @@ import java.io.*;
 
 public class Main {
 
-    public static final int NB_TSP = 2000; // Number of instances to create
-    public static final int NB_CITIES = 10; // Number of cities for each instance
+    public static final int NB_TSP = 10; // Number of instances to create
+    public static final int NB_CITIES = 25; // Number of cities for each instance
 
     public static void main(String[] args) throws FileNotFoundException, UnsupportedEncodingException {
 
@@ -37,9 +37,13 @@ public class Main {
 
             // Print solution to a .txt file
             String res = "";
-            for (int k=0; k<successors.length; k++) {
-                res += sol.getIntVal(successors[k]);
-                res += (k<successors.length-1) ? "\t" : "";
+            int[] ordered_path = new int[NB_CITIES];
+            ordered_path[0] = successors[0].getValue();
+            for (int k=1; k<NB_CITIES; k++) {ordered_path[k] = sol.getIntVal(successors[ordered_path[k-1]]);}
+
+        for (int k=0; k<ordered_path.length; k++) {
+                res += ordered_path[k];
+                res += (k<ordered_path.length-1) ? "\t" : "";
             }
             PrintWriter writer = new PrintWriter(
                     String.format("dataSet_%d_%d.choco", tsp.getNb_cities(), i), "UTF-8");
