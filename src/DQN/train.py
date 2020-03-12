@@ -56,7 +56,8 @@ def select_action(state):
             # t.max(1) will return largest column value of each row.
             # second column on max result is index of where max element was found,
             # so we pick action with the larger expected reward.
-            return torch.tensor([[policy_net(state.float().reshape(1, nb_cities * (nb_cities + 1))).argmax()]], device=device, dtype=torch.long)
+            return torch.tensor([[policy_net(state.float().reshape(1, nb_cities * (nb_cities + 1))).argmax()]],
+                                device=device, dtype=torch.long)
     else:
         return torch.tensor([[random.randrange(nb_actions)]], device=device, dtype=torch.long)
 
@@ -102,8 +103,10 @@ def optimize_model():
     # Optimize the model
     optimizer.zero_grad()
     loss.backward()
+    # temp = policy_net.parameters()
     for param in policy_net.parameters():
-        param.grad.data.clamp_(-1, 1)
+        if param.grad is not None:
+            param.grad.data.clamp_(-1, 1)
     optimizer.step()
 
 
