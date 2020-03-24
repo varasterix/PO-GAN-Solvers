@@ -115,7 +115,6 @@ def test(model, test_set, tsp_database_path):
 
         target = build_target_from_output(output, nb_cities)
         candidate = OrderedPath(np.array(torch.argmax(output.detach(), dim=1), dtype=int).transpose(), weight_matrix)
-        print(candidate.get_candidate())
 
         test_loss += model.loss_function(output, target)  # sum up batch loss
         correct += int(candidate.is_solution())
