@@ -64,7 +64,11 @@ class OrderedPathBinaryMatrix(CandidateTSP):
 
     def __copy__(self):
         return OrderedPathBinaryMatrix(np.copy(self.__binary_matrix), np.copy(self.__distance_matrix),
-                                       np.copy(self.__cartesian_coordinates))
+                                       None if self.__cartesian_coordinates is None
+                                       else np.copy(self.__cartesian_coordinates))
+
+    def to_ordered_path_binary_matrix(self):
+        return self.__copy__()
 
     def get_nb_cities(self):
         return self.__nb_cities

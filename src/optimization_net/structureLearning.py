@@ -8,7 +8,7 @@ from torch.autograd import Variable
 from torch import optim
 from src import constants
 from src.utils import custom_formatwarning
-from src.database.databaseTools import read_tsp_heuristic_solution_file
+from src.database.databaseTools import read_tsp_choco_solution_file
 from src.optimization_net.opt_net import OptNet
 from src.objects.orderedPath import OrderedPath
 from src.objects.objectsTools import normalize_weight_matrix
@@ -42,7 +42,7 @@ def train(model, train_set, optimizer, tsp_database_path):
     for data_file in train_set:
         details = data_file.split('.')[0].split('_')
         nb_cities, instance_id = int(details[1]), int(details[2])
-        ordered_path, total_weight = read_tsp_heuristic_solution_file(nb_cities, instance_id, tsp_database_path)
+        ordered_path, total_weight = read_tsp_choco_solution_file(nb_cities, instance_id, tsp_database_path)
         weight_matrix = ordered_path.get_weight_matrix()
         input_data = Variable(torch.tensor(normalize_weight_matrix(weight_matrix).reshape((1, nb_cities * nb_cities)),
                                            dtype=torch.float), requires_grad=True)
@@ -74,7 +74,7 @@ def valid(model, valid_set, epoch, tsp_database_path):
     for data_file in valid_set:
         details = data_file.split('.')[0].split('_')
         nb_cities, instance_id = int(details[1]), int(details[2])
-        ordered_path, total_weight = read_tsp_heuristic_solution_file(nb_cities, instance_id, tsp_database_path)
+        ordered_path, total_weight = read_tsp_choco_solution_file(nb_cities, instance_id, tsp_database_path)
         weight_matrix = ordered_path.get_weight_matrix()
         input_data = Variable(torch.tensor(normalize_weight_matrix(weight_matrix).reshape((1, nb_cities * nb_cities)),
                                            dtype=torch.float))
@@ -107,7 +107,7 @@ def test(model, test_set, tsp_database_path):
     for data_file in test_set:
         details = data_file.split('.')[0].split('_')
         nb_cities, instance_id = int(details[1]), int(details[2])
-        ordered_path, total_weight = read_tsp_heuristic_solution_file(nb_cities, instance_id, tsp_database_path)
+        ordered_path, total_weight = read_tsp_choco_solution_file(nb_cities, instance_id, tsp_database_path)
         weight_matrix = ordered_path.get_weight_matrix()
         input_data = Variable(torch.tensor(normalize_weight_matrix(weight_matrix).reshape((1, nb_cities * nb_cities)),
                                            dtype=torch.float))
@@ -149,19 +149,18 @@ def experiment(model, epochs, lr, train_set, valid_set, tsp_database_path):
 
 if __name__ == '__main__':
     # Parameters
-    tsp_heuristic_database_path = "../../" + constants.PARAMETER_TSP_DATA_FILES
+    tsp_instances_database_path = "../../" + constants.PARAMETER_TSP_CHOCO_DATA_FILES
     number_cities = 10
     train_proportion = 0.8
     valid_proportion = 0.1
     test_proportion = 0.1
     over_fit_one_instance = False
     Models = [OptNet(number_cities)]  # add your models in the list
-    nb_epochs = 50
+    nb_epochs = 20
     learning_rate = 0.001
 
     # Preparation of the TSP dataSet
-    tsp_database_files = [file_name for file_name in os.listdir(tsp_heuristic_database_path)
-                          if file_name.split('.')[1] == 'heuristic']
+    tsp_database_files = [file_name for file_name in os.listdir(tsp_instances_database_path)]
     random.shuffle(tsp_database_files)
     tsp_database_size = len(tsp_database_files)
     if over_fit_one_instance:
@@ -180,13 +179,13 @@ if __name__ == '__main__':
     for model_ in Models:
         model_, precision_, accuracy_by_epochs_, valid_loss_by_epochs_, duplicates_by_epochs_ = \
             experiment(model_, epochs=nb_epochs, lr=learning_rate, train_set=train_data,
-                       valid_set=valid_data, tsp_database_path=tsp_heuristic_database_path)
+                       valid_set=valid_data, tsp_database_path=tsp_instances_database_path)
         results.append((model_.name, accuracy_by_epochs_, valid_loss_by_epochs_, duplicates_by_epochs_))
         if precision_ > best_precision_:
             best_precision_ = precision_
             best_model_ = model_
 
-    test(best_model_, test_data, tsp_heuristic_database_path)
+    test(best_model_, test_data, tsp_instances_database_path)
 
     # PLOT SECTION
     # Warning section about the plot
@@ -238,5 +237,6 @@ if __name__ == '__main__':
     ax1.set_position([box.x0, box.y0 + box.height * 0.15, box.width, box.height * 0.85])
     ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=nb_results)
 
-    plt.savefig("../../" + constants.PARAMETER_FIGURE_RESULTS_PATH + "structureLearning" + models_name)
+    plt.savefig("../../" + constants.PARAMETER_FIGURE_RESULTS_PATH + "structureLearning" + models_name + "_"
+                + str(learning_rate).replace('.', 'x'))
     plt.show()

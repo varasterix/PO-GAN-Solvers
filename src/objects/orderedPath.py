@@ -62,7 +62,10 @@ class OrderedPath(CandidateTSP):
 
     def __copy__(self):
         return OrderedPath(np.copy(self.__ordered_path), np.copy(self.__distance_matrix),
-                           np.copy(self.__cartesian_coordinates))
+                           None if self.__cartesian_coordinates is None else np.copy(self.__cartesian_coordinates))
+
+    def to_ordered_path(self):
+        return self.__copy__()
 
     def get_nb_cities(self):
         return self.__nb_cities
@@ -153,9 +156,9 @@ class OrderedPath(CandidateTSP):
         is_valid_structure = (type(self.__ordered_path) == np.ndarray and self.__ordered_path.dtype == int and
                               objectsTools.is_weight_matrix_valid_structure(self.__distance_matrix) and
                               len(self.__distance_matrix) == self.__nb_cities and
-                              ((objectsTools.is_cartesian_coordinates_valid_structure(self.__cartesian_coordinates) and
-                                self.__cartesian_coordinates.shape[0] == self.__nb_cities)
-                               or self.__cartesian_coordinates is None))
+                              (self.__cartesian_coordinates is None or
+                              (objectsTools.is_cartesian_coordinates_valid_structure(self.__cartesian_coordinates) and
+                               self.__cartesian_coordinates.shape[0] == self.__nb_cities)))
         if is_valid_structure:
             i = 0
             while is_valid_structure and i < self.__nb_cities:
