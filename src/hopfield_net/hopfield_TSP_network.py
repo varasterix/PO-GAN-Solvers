@@ -193,18 +193,19 @@ class HopfieldTSPNetwork:
             new_external_states = self.external_states.copy()
             new_energy = self.compute_energy()
             energy.append(new_energy)
-            # The best configuration is updated
-            if new_energy < lowest_energy:
-                self.best_configuration = new_external_states.copy()
-                lowest_energy = new_energy
             # The stop criterion is checked
-            if stop_at_local_min and energy[-2] < new_energy:
+            if stop_at_local_min and len(energy) >= 2 and energy[-2] < new_energy:
+                # if stop_at_local_min and lowest_energy == new_energy:
                 stop_criterion = True
             elif (new_external_states == current_external_states).all():
                 stop_criterion = True
             else:
                 if iteration >= max_iterations:
                     stop_criterion = True
+            # The best configuration is updated
+            if new_energy < lowest_energy:
+                self.best_configuration = new_external_states.copy()
+                lowest_energy = new_energy
             current_external_states = new_external_states.copy()
         return iteration, energy
 
