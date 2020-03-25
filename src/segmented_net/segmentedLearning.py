@@ -99,6 +99,7 @@ def test(model, test_set, database_path):
     test_loss /= test_set_size
     print('\n' + "test" + ' set: Average loss: {:.4f}, Accuracy: {}/{} ({:.2f}%)\n'.format(
         test_loss, sum_predictions, test_set_size, 100. * sum_predictions / test_set_size))
+    return sum_predictions / test_set_size
 
 
 def experiment(model, epochs, lr, train_set, valid_set, database_path):
@@ -130,10 +131,10 @@ if __name__ == '__main__':
     valid_proportion = 0.1
     test_proportion = 0.1
     over_fit_one_instance = False
-    Models = [SegNet(number_cities), SegNet2(number_cities)]  # add your models in the list
-    # Models = [SegNet2(number_cities)]  # add your models in the list
-    nb_epochs = 50
-    learning_rate = 0.001
+    # Models = [SegNet(number_cities), SegNet2(number_cities)]  # add your models in the list
+    Models = [SegNet2(number_cities)]  # add your models in the list
+    nb_epochs = 100
+    learning_rate = 0.01
 
     # Preparation of the TSP dataSet
     tsp_database_files = [file_name for file_name in os.listdir(tsp_database_path)]
@@ -186,7 +187,7 @@ if __name__ == '__main__':
             best_precision_ = precision_
             best_model_ = model_
 
-    test(best_model_, test_data, tsp_database_path)
+    test_accuracy = test(best_model_, test_data, tsp_database_path)
 
     # PLOT SECTION
     # Warning section about the plot
@@ -202,7 +203,8 @@ if __name__ == '__main__':
     # Validation results plot section
     fig, ax1 = plt.subplots()
     ax1.set_xlabel("Epochs")
-    plt.title("Validation loss, accuracy and TSP metric by epochs and models")
+    plt.title("Validation loss, accuracy, TSP metric by epochs (test acc {:.0f}%)"
+              .format(test_accuracy * 100.))
     ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
     # ax3.spines["right"].set_position(("axes", 1.2))  # insert a spine for the third y-axis
     ax1.set_ylabel("Accuracy")
@@ -231,5 +233,6 @@ if __name__ == '__main__':
     ax1.set_position([box.x0, box.y0 + box.height * 0.15, box.width, box.height * 0.85])
     ax1.legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=nb_results)
 
-    plt.savefig("../../" + constants.PARAMETER_FIGURE_RESULTS_PATH + "segmentedLearning" + models_name)
+    plt.savefig("../../" + constants.PARAMETER_FIGURE_RESULTS_PATH + "segmentedLearning" + models_name + "_"
+                + str(learning_rate).replace('.', 'x'))
     plt.show()
