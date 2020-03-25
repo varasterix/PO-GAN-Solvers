@@ -85,3 +85,15 @@ class CandidateTSP(CandidateCSP):
 
     def get_cartesian_coordinates(self):
         raise NotImplementedError
+
+    def to_ordered_path(self):
+        raise NotImplementedError
+
+    def to_ordered_path_binary_matrix(self):
+        raise NotImplementedError
+
+    def to_neighbours(self):
+        raise NotImplementedError
+
+    def to_neighbours_binary_matrix(self):
+        raise NotImplementedError

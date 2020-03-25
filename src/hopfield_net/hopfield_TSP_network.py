@@ -31,8 +31,9 @@ class HopfieldTSPNetwork:
         self.external_inputs = np.array([self.params['C'] * nb_cities] * self.nb_neurons)  # I_i,j (n²,1) - PARAMETERS
         self.constant_energy_term = (self.params['C'] * nb_cities * nb_cities) / 2  # PARAMETER
         self.internal_states = np.zeros(self.nb_neurons)  # u_i,j (n²,1) - VARIABLES
-        self.external_states = np.array([0] * self.nb_neurons)  # v_i,j (n²,1) - VARIABLES -> random.randint(0, 1) ?
+        self.external_states = np.array([random.randint(0, 1)] * self.nb_neurons)  # v_i,j (n²,1) - VARIABLES -> 0 ?
         self.activation_function = lambda d: 1 if (d > 0) else 0  # f(), discrete version
+        self.best_configuration = self.external_states.copy()
 
     def get_nb_cities(self):
         return self.nb_cities
@@ -94,6 +95,10 @@ class HopfieldTSPNetwork:
     def get_external_input(self, i, j):
         index = (i * self.get_nb_cities()) + j
         return self.external_inputs[index]
+
+    def get_best_configuration(self, i, j):
+        index = (i * self.get_nb_cities()) + j
+        return self.best_configuration[index]
 
     def get_external_state(self, i, j):
         index = (i * self.get_nb_cities()) + j
@@ -167,33 +172,46 @@ class HopfieldTSPNetwork:
             self.compute_internal_state(i, j)
             self.compute_external_state(i, j)
 
-    def run_until_stable(self, max_iterations=500):
+    def run_until_stable(self, max_iterations=500, stop_at_local_min=True):
         """
-        Run the network until it becomes stable and does not change from more runs
+        Run the network until the energy function has reached a local minimum if stop_at_local_min is True, or until it
+        becomes stable and does not change from more runs otherwise
         :param max_iterations: The maximum number of iterations/cycles to run before giving up
-        :return: The number of iterations/cycles that were run, and the TSP energy over these iterations
+        :param stop_at_local_min: boolean to stop running if a local minimum is reached by the energy function
+        :return: The number of iterations/cycles that were run, and the TSP energy over these iterations (without
+        the random initial TSP energy in the network)
         """
         neurons_indices = self.get_all_neurons_indices()
         stop_criterion = False
         current_external_states = self.external_states.copy()
-        energy = [self.compute_energy()]
+        lowest_energy = self.compute_energy()
+        energy = []
         iteration = 0
         while not stop_criterion:
             iteration += 1
             self.run(neurons_indices)
-            energy.append(self.compute_energy())
             new_external_states = self.external_states.copy()
-            if (new_external_states == current_external_states).all():  # TODO : when energy is cst ?
+            new_energy = self.compute_energy()
+            energy.append(new_energy)
+            # The stop criterion is checked
+            if stop_at_local_min and len(energy) >= 2 and energy[-2] < new_energy:
+                # if stop_at_local_min and lowest_energy == new_energy:
+                stop_criterion = True
+            elif (new_external_states == current_external_states).all():
                 stop_criterion = True
             else:
                 if iteration >= max_iterations:
                     stop_criterion = True
+            # The best configuration is updated
+            if new_energy < lowest_energy:
+                self.best_configuration = new_external_states.copy()
+                lowest_energy = new_energy
             current_external_states = new_external_states.copy()
         return iteration, energy
 
-    def get_ordered_path_binary_matrix(self):
+    def get_best_ordered_path_binary_matrix(self):
         binary_matrix = np.zeros((self.get_nb_cities(), self.get_nb_cities()), dtype=int)
         for i in range(self.get_nb_cities()):
             for j in range(self.get_nb_cities()):
-                binary_matrix[i, j] = self.get_external_state(i, j)
+                binary_matrix[i, j] = self.get_best_configuration(i, j)
         return oPBM.OrderedPathBinaryMatrix(binary_matrix, self.get_distance_matrix(), self.get_cartesian_coordinates())
