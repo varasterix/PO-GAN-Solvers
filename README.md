@@ -7,7 +7,7 @@ The source code (in Python and Java) currently summarizes some neural network ar
 a well-known COP : the Travelling Salesperson Problem.
 
 In the following parts, we present the crucial information to understand the content of this project, which was 
-developed by four engineers students, between October 2019 and March 2020. 
+developed by four engineering students, from October 2019 to March 2020. 
 
 ## Database
 
