@@ -1,6 +1,13 @@
 # PO-GAN-Solvers
 
-The goal of this project is to create an architecture close to the GAN architecture, where the Discriminator is replaced with a solver related to the concerned problem.
+The initial goal of this project is to create an architecture close to the GAN architecture, where the Discriminator is 
+replaced with a solver related to the concerned problem (a constraint satisfaction/optimization problem).
+
+The source code (in Python and Java) currently summarizes some neural network architectures and methods used to solve 
+a well-known COP : the Travelling Salesperson Problem.
+
+In the following parts, we present the crucial information to understand the content of this project, which was 
+developed by four engineers students, between October 2019 and March 2020. 
 
 ## Database
 
@@ -38,7 +45,37 @@ Notes:
 - *S* [*i*] represents the (*i+1*) th city visited in the solution
 - *total_weight* represents the total cost/weight/distance of the solution *S* for the considered instance
 
-## Shell scripts
+This format is respected in all the data files in the repository data/, just with a variable extension.
+
+
+## Neural Network Architectures
+
+Five main neural network architectures were developed (using the library PyTorch for most of them) :
+
+- A simple neural network (main code in src/optimization_net/)
+
+- A GAN (Generative Adversarial Network) (src/gan/ - src/generator/ - src/discriminator/)
+
+- A segmented neural network (src/segmented_net/)
+
+- A Hopfield neural network (src/hopfield_net/)
+
+- A Deep Q-Learning architecture for reinforcement learning (src/DQN/) (whose implementation is not finished) 
+
+For these five architectures, the executive/train scripts are in the following respective paths :
+
+- src/optimization_net/structureLearning.py or src/optimization_net/chocoLearning.py
+
+- src/gan/gan.py
+
+- src/segmented_net/segmentedLearning.py
+
+- src/hopfield_net/hopfieldLearning.py
+
+- src/DQN/train.py
+
+
+## Shell scripts (DEPRECATED)
 
 #### How to use the shell file "generator.sh" :
 
